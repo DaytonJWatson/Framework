@@ -16,7 +16,38 @@ public class FlyCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        if (!requirePermission(sender, "framework.fly")) {
+            return true;
+        }
+
+        if (args.length == 0 && !requirePlayer(sender)) {
+            return true;
+        }
+
+        org.bukkit.entity.Player target;
+        if (args.length > 0) {
+            target = org.bukkit.Bukkit.getPlayerExact(args[0]);
+            if (target == null) {
+                messages.sendMessage(sender, "player-not-found");
+                return true;
+            }
+        } else {
+            target = (org.bukkit.entity.Player) sender;
+        }
+
+        boolean newState = !playerData.isFlying(target);
+        playerData.setFlying(target, newState);
+        target.setAllowFlight(newState || target.getGameMode() == org.bukkit.GameMode.CREATIVE || target.getGameMode() == org.bukkit.GameMode.SPECTATOR);
+        if (!newState && target.getGameMode() != org.bukkit.GameMode.CREATIVE && target.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+            target.setFlying(false);
+        }
+
+        if (target.equals(sender)) {
+            messages.sendMessage(target, newState ? "fly-enabled" : "fly-disabled");
+        } else {
+            messages.sendMessage(sender, newState ? "fly-enabled-other" : "fly-disabled-other", "player", target.getName());
+            messages.sendMessage(target, newState ? "fly-notify-enabled" : "fly-notify-disabled", "player", sender.getName());
+        }
         return true;
     }
 }

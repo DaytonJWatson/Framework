@@ -16,7 +16,28 @@ public class EnderseeCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        if (!requirePermission(sender, "framework.endersee")) {
+            return true;
+        }
+        if (!requirePlayer(sender)) {
+            return true;
+        }
+
+        org.bukkit.entity.Player viewer = (org.bukkit.entity.Player) sender;
+        org.bukkit.entity.Player target;
+
+        if (args.length == 0) {
+            target = viewer;
+        } else {
+            target = org.bukkit.Bukkit.getPlayerExact(args[0]);
+            if (target == null) {
+                messages.sendMessage(sender, "player-not-found");
+                return true;
+            }
+        }
+
+        viewer.openInventory(target.getEnderChest());
+        viewer.sendMessage(messages.getMessage("endersee-open").replace("%player%", target.getName()));
         return true;
     }
 }

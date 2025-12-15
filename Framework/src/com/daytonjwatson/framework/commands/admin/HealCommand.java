@@ -16,7 +16,38 @@ public class HealCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        if (!requirePermission(sender, "framework.heal")) {
+            return true;
+        }
+
+        if (args.length == 0 && !requirePlayer(sender)) {
+            return true;
+        }
+
+        org.bukkit.entity.Player target;
+        if (args.length > 0) {
+            target = org.bukkit.Bukkit.getPlayerExact(args[0]);
+            if (target == null) {
+                messages.sendMessage(sender, "player-not-found");
+                return true;
+            }
+        } else {
+            target = (org.bukkit.entity.Player) sender;
+        }
+
+        double maxHealth = target.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getValue();
+        target.setHealth(maxHealth);
+        target.setFoodLevel(20);
+        target.setSaturation(20f);
+        target.setExhaustion(0f);
+        target.setFireTicks(0);
+
+        if (target.equals(sender)) {
+            messages.sendMessage(target, "heal-self");
+        } else {
+            messages.sendMessage(sender, "heal-other", "player", target.getName());
+            messages.sendMessage(target, "heal-notify", "player", sender.getName());
+        }
         return true;
     }
 }
