@@ -11,8 +11,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerDataManager {
-    private final FrameworkPlugin plugin;
-    private final StorageManager storageManager;
     private final Map<UUID, Location> lastLocation = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> replyTargets = new ConcurrentHashMap<>();
     private final Map<UUID, Set<UUID>> ignores = new ConcurrentHashMap<>();
@@ -22,8 +20,6 @@ public class PlayerDataManager {
     private final Set<UUID> flying = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public PlayerDataManager(FrameworkPlugin plugin, StorageManager storageManager) {
-        this.plugin = plugin;
-        this.storageManager = storageManager;
     }
 
     public void setLastLocation(Player player, Location location) {

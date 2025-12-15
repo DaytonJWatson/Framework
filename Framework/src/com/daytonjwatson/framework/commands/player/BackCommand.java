@@ -1,4 +1,4 @@
-package com.daytonjwatson.framework.commands.admin;
+package com.daytonjwatson.framework.commands.player;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.api.FrameworkAPI;
@@ -11,8 +11,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SetSpawnCommand extends BaseCommand {
-    public SetSpawnCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
+public class BackCommand extends BaseCommand {
+    public BackCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
         super(plugin, api, storage, playerData, messages);
     }
 
@@ -20,15 +20,15 @@ public class SetSpawnCommand extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!requirePlayer(sender)) return true;
         Player player = (Player) sender;
-        Location loc = player.getLocation();
-        plugin.getConfig().set("spawn.world", loc.getWorld().getName());
-        plugin.getConfig().set("spawn.x", loc.getX());
-        plugin.getConfig().set("spawn.y", loc.getY());
-        plugin.getConfig().set("spawn.z", loc.getZ());
-        plugin.getConfig().set("spawn.yaw", loc.getYaw());
-        plugin.getConfig().set("spawn.pitch", loc.getPitch());
-        plugin.saveConfig();
-        messages.sendMessage(player, "spawn-set");
+        Location last = playerData.getLastLocation(player);
+        if (last == null) {
+            messages.sendMessage(player, "back-none");
+            return true;
+        }
+        Location current = player.getLocation();
+        player.teleport(last);
+        playerData.setLastLocation(player, current);
+        messages.sendMessage(player, "back-teleport");
         return true;
     }
 }

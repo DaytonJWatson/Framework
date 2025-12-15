@@ -1,0 +1,37 @@
+package com.daytonjwatson.framework.commands.player;
+
+import com.daytonjwatson.framework.FrameworkPlugin;
+import com.daytonjwatson.framework.api.FrameworkAPI;
+import com.daytonjwatson.framework.commands.BaseCommand;
+import com.daytonjwatson.framework.data.PlayerDataManager;
+import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.data.TeleportRequest;
+import com.daytonjwatson.framework.utils.MessageHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class TpDenyCommand extends BaseCommand {
+    public TpDenyCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
+        super(plugin, api, storage, playerData, messages);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePlayer(sender)) return true;
+        Player player = (Player) sender;
+        TeleportRequest request = playerData.getTpaRequest(player);
+        if (request == null) {
+            messages.sendMessage(player, "tpa-none");
+            return true;
+        }
+        Player from = Bukkit.getPlayer(request.getFrom());
+        if (from != null) {
+            messages.sendMessage(from, "tpa-denied", "player", player.getName());
+        }
+        messages.sendMessage(player, "tpa-denied", "player", from != null ? from.getName() : "");
+        playerData.clearTpaRequest(player);
+        return true;
+    }
+}

@@ -12,11 +12,9 @@ import com.daytonjwatson.framework.FrameworkPlugin;
 
 public class MessageHandler {
 
-    private final FrameworkPlugin plugin;
     private final FileConfiguration messages;
 
     public MessageHandler(FrameworkPlugin plugin) {
-        this.plugin = plugin;
         File file = new File(plugin.getDataFolder(), "messages.yml");
         this.messages = YamlConfiguration.loadConfiguration(file);
     }
