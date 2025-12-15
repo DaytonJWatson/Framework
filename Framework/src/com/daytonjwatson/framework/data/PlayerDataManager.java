@@ -110,6 +110,7 @@ public class PlayerDataManager {
 
     public boolean initiateTeleport(Player player, Location destination, Runnable afterTeleport) {
         UUID uuid = player.getUniqueId();
+        boolean bypassCooldowns = player.hasPermission("framework.cooldown.bypass");
 
         if (pendingTeleports.containsKey(uuid)) {
             messages.sendMessage(player, "teleport-pending");
@@ -118,7 +119,7 @@ public class PlayerDataManager {
 
         long cooldownMillis = plugin.getConfig().getLong("teleport.cooldown-seconds", 0L) * 1000L;
         long now = System.currentTimeMillis();
-        if (cooldownMillis > 0) {
+        if (!bypassCooldowns && cooldownMillis > 0) {
             long elapsed = now - teleportCooldowns.getOrDefault(uuid, 0L);
             if (elapsed < cooldownMillis) {
                 long remaining = cooldownMillis - elapsed;
@@ -127,7 +128,7 @@ public class PlayerDataManager {
             }
         }
 
-        long warmupSeconds = plugin.getConfig().getLong("teleport.warmup-seconds", 0L);
+        long warmupSeconds = bypassCooldowns ? 0L : plugin.getConfig().getLong("teleport.warmup-seconds", 0L);
         if (warmupSeconds <= 0) {
             performTeleport(player, destination, afterTeleport);
             return true;
@@ -170,7 +171,9 @@ public class PlayerDataManager {
     private void performTeleport(Player player, Location destination, Runnable afterTeleport) {
         cancelTeleport(player.getUniqueId());
         player.teleport(destination);
-        teleportCooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+        if (!player.hasPermission("framework.cooldown.bypass")) {
+            teleportCooldowns.put(player.getUniqueId(), System.currentTimeMillis());
+        }
         if (afterTeleport != null) {
             afterTeleport.run();
         }
