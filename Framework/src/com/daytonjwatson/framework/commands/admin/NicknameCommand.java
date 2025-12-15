@@ -1,4 +1,4 @@
-package com.daytonjwatson.framework.commands.player;
+package com.daytonjwatson.framework.commands.admin;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.api.FrameworkAPI;
