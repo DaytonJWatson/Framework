@@ -10,6 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SetWarpCommand extends BaseCommand {
     public SetWarpCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
         super(plugin, api, storage, playerData, messages);
@@ -26,5 +29,13 @@ public class SetWarpCommand extends BaseCommand {
         storage.setWarp(args[0], player.getLocation());
         messages.sendMessage(player, "warp-set", "warp", args[0]);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return new ArrayList<>(storage.getWarps());
+        }
+        return super.onTabComplete(sender, command, alias, args);
     }
 }

@@ -6,8 +6,14 @@ import com.daytonjwatson.framework.commands.BaseCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.Statistic;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StatsCommand extends BaseCommand {
     public StatsCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
@@ -16,7 +22,38 @@ public class StatsCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        Player target;
+        if (args.length > 0) {
+            target = Bukkit.getPlayer(args[0]);
+            if (target == null) {
+                messages.sendMessage(sender, "player-not-found");
+                return true;
+            }
+        } else {
+            if (!(sender instanceof Player player)) {
+                messages.sendMessage(sender, "only-players");
+                return true;
+            }
+            target = player;
+        }
+
+        int kills = target.getStatistic(Statistic.PLAYER_KILLS);
+        int deaths = target.getStatistic(Statistic.DEATHS);
+        sender.sendMessage(messages.getMessage("stats-format")
+                .replace("%player%", target.getName())
+                .replace("%kills%", String.valueOf(kills))
+                .replace("%deaths%", String.valueOf(deaths)));
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return super.onTabComplete(sender, command, alias, args);
     }
 }

@@ -12,6 +12,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MsgCommand extends BaseCommand {
     public MsgCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
@@ -40,5 +42,17 @@ public class MsgCommand extends BaseCommand {
         to.sendMessage(messages.getMessage("msg-format-target").replace("%player%", from.getName()).replace("%message%", message));
         playerData.setReplyTarget(from, to);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1 && sender instanceof Player player) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .filter(target -> !target.getUniqueId().equals(player.getUniqueId()))
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return super.onTabComplete(sender, command, alias, args);
     }
 }

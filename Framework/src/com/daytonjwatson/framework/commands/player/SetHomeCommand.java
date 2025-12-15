@@ -10,6 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SetHomeCommand extends BaseCommand {
     public SetHomeCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
         super(plugin, api, storage, playerData, messages);
@@ -28,5 +31,13 @@ public class SetHomeCommand extends BaseCommand {
         storage.setHome(player, name, player.getLocation());
         messages.sendMessage(player, "home-set", "home", name);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1 && sender instanceof Player player) {
+            return new ArrayList<>(storage.getHomes(player));
+        }
+        return super.onTabComplete(sender, command, alias, args);
     }
 }
