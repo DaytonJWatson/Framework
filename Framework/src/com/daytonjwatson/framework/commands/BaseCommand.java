@@ -44,4 +44,12 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
         }
         return true;
     }
+
+    protected boolean requirePermission(CommandSender sender, String permission) {
+        if (permission == null || permission.isEmpty() || sender.hasPermission(permission)) {
+            return true;
+        }
+        messages.sendMessage(sender, "no-permission");
+        return false;
+    }
 }
