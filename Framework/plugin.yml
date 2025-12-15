@@ -21,6 +21,7 @@ commands:
     description: Teleport to warp
   setwarp:
     description: Create a warp
+    permission: framework.setwarp
   warps:
     description: List warps
   home:
@@ -68,22 +69,31 @@ commands:
     description: View playtime
   ban:
     description: Ban player
+    permission: framework.ban
   tempban:
     description: Temporarily ban player
+    permission: framework.tempban
   unban:
     description: Unban player
+    permission: framework.unban
   mute:
     description: Mute player
+    permission: framework.mute
   tempmute:
     description: Temp mute player
+    permission: framework.tempmute
   unmute:
     description: Unmute player
+    permission: framework.unmute
   kick:
     description: Kick player
+    permission: framework.kick
   warn:
     description: Warn player
+    permission: framework.warn
   warnings:
     description: View warnings
+    permission: framework.warnings
   time:
     description: Set time
   weather:
@@ -91,32 +101,47 @@ commands:
   gamemode:
     description: Set gamemode
     aliases: gm
+    permission: framework.gamemode
   tp:
     description: Teleport to player
+    permission: framework.tp
   tphere:
     description: Teleport a player to you
+    permission: framework.tphere
   tpall:
     description: Teleport all to you
+    permission: framework.tpall
   fly:
     description: Toggle flight
+    permission: framework.fly
   god:
     description: Toggle god mode
+    permission: framework.god
   heal:
     description: Heal
+    permission: framework.heal
   feed:
     description: Feed
+    permission: framework.feed
   vanish:
     description: Toggle vanish
-	aliases: v
+    permission: framework.vanish
+    aliases: v
   invsee:
     description: View inventory
+    permission: framework.invsee
   endersee:
     description: View ender chest
+    permission: framework.endersee
   clear:
     description: Clear inventory
+    permission: framework.clear
   give:
     description: Give items
+    permission: framework.give
   enchant:
     description: Enchant item
+    permission: framework.enchant
   broadcast:
     description: Broadcast message
+    permission: framework.broadcast
