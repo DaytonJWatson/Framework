@@ -21,6 +21,7 @@ import com.daytonjwatson.framework.commands.admin.TempBanCommand;
 import com.daytonjwatson.framework.commands.admin.TempMuteCommand;
 import com.daytonjwatson.framework.commands.admin.TpallCommand;
 import com.daytonjwatson.framework.commands.admin.UnbanCommand;
+import com.daytonjwatson.framework.commands.admin.UnmuteCommand;
 import com.daytonjwatson.framework.commands.admin.VanishCommand;
 import com.daytonjwatson.framework.commands.admin.WarnCommand;
 import com.daytonjwatson.framework.commands.admin.WarningsCommand;
@@ -107,6 +108,7 @@ public class CommandRegistrar {
         register("unban", new UnbanCommand(plugin, api, storage, playerData, messages));
         register("mute", new MuteCommand(plugin, api, storage, playerData, messages));
         register("tempmute", new TempMuteCommand(plugin, api, storage, playerData, messages));
+        register("unmute", new UnmuteCommand(plugin, api, storage, playerData, messages));
         register("kick", new KickCommand(plugin, api, storage, playerData, messages));
         register("warn", new WarnCommand(plugin, api, storage, playerData, messages));
         register("warnings", new WarningsCommand(plugin, api, storage, playerData, messages));

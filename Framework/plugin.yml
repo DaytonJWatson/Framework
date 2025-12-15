@@ -71,6 +71,8 @@ commands:
     description: Mute player
   tempmute:
     description: Temp mute player
+  unmute:
+    description: Unmute player
   kick:
     description: Kick player
   warn:

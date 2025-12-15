@@ -19,27 +19,39 @@ public class StorageManager {
     private final FileConfiguration homesConfig;
     private final File warpsFile;
     private final FileConfiguration warpsConfig;
-    private final File warningsFile;
-    private final FileConfiguration warningsConfig;
+    private final File bansFile;
+    private final FileConfiguration bansConfig;
+    private final File warnsFile;
+    private final FileConfiguration warnsConfig;
+    private final File mutesFile;
+    private final FileConfiguration mutesConfig;
 
     public StorageManager(FrameworkPlugin plugin) {
         this.plugin = plugin;
         homesFile = new File(plugin.getDataFolder(), "homes.yml");
         warpsFile = new File(plugin.getDataFolder(), "warps.yml");
-        warningsFile = new File(plugin.getDataFolder(), "warnings.yml");
+        bansFile = new File(plugin.getDataFolder(), "bans.yml");
+        warnsFile = new File(plugin.getDataFolder(), "warns.yml");
+        mutesFile = new File(plugin.getDataFolder(), "mutes.yml");
         if (!homesFile.exists()) plugin.saveResource("homes.yml", false);
         if (!warpsFile.exists()) plugin.saveResource("warps.yml", false);
-        if (!warningsFile.exists()) plugin.saveResource("warnings.yml", false);
+        if (!bansFile.exists()) plugin.saveResource("bans.yml", false);
+        if (!warnsFile.exists()) plugin.saveResource("warns.yml", false);
+        if (!mutesFile.exists()) plugin.saveResource("mutes.yml", false);
         homesConfig = YamlConfiguration.loadConfiguration(homesFile);
         warpsConfig = YamlConfiguration.loadConfiguration(warpsFile);
-        warningsConfig = YamlConfiguration.loadConfiguration(warningsFile);
+        bansConfig = YamlConfiguration.loadConfiguration(bansFile);
+        warnsConfig = YamlConfiguration.loadConfiguration(warnsFile);
+        mutesConfig = YamlConfiguration.loadConfiguration(mutesFile);
     }
 
     public void saveAll() {
         try {
             homesConfig.save(homesFile);
             warpsConfig.save(warpsFile);
-            warningsConfig.save(warningsFile);
+            bansConfig.save(bansFile);
+            warnsConfig.save(warnsFile);
+            mutesConfig.save(mutesFile);
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to save data: " + e.getMessage());
         }
@@ -84,21 +96,23 @@ public class StorageManager {
     }
 
     public void addWarning(String playerName, String reason, String issuedBy) {
-        int count = warningsConfig.getInt(playerName + ".count", 0) + 1;
-        warningsConfig.set(playerName + ".count", count);
-        warningsConfig.set(playerName + ".warnings." + count + ".reason", reason);
-        warningsConfig.set(playerName + ".warnings." + count + ".by", issuedBy);
+        String key = playerName.toLowerCase();
+        int count = warnsConfig.getInt(key + ".count", 0) + 1;
+        warnsConfig.set(key + ".count", count);
+        warnsConfig.set(key + ".warnings." + count + ".reason", reason);
+        warnsConfig.set(key + ".warnings." + count + ".by", issuedBy);
         saveAll();
     }
 
     public Map<Integer, Map<String, String>> getWarnings(String playerName) {
         Map<Integer, Map<String, String>> warnings = new HashMap<>();
-        if (warningsConfig.getConfigurationSection(playerName + ".warnings") != null) {
-            for (String key : warningsConfig.getConfigurationSection(playerName + ".warnings").getKeys(false)) {
-                int index = Integer.parseInt(key);
+        String key = playerName.toLowerCase();
+        if (warnsConfig.getConfigurationSection(key + ".warnings") != null) {
+            for (String warnKey : warnsConfig.getConfigurationSection(key + ".warnings").getKeys(false)) {
+                int index = Integer.parseInt(warnKey);
                 Map<String, String> warn = new HashMap<>();
-                warn.put("reason", warningsConfig.getString(playerName + ".warnings." + key + ".reason"));
-                warn.put("by", warningsConfig.getString(playerName + ".warnings." + key + ".by"));
+                warn.put("reason", warnsConfig.getString(key + ".warnings." + warnKey + ".reason"));
+                warn.put("by", warnsConfig.getString(key + ".warnings." + warnKey + ".by"));
                 warnings.put(index, warn);
             }
         }
@@ -106,7 +120,85 @@ public class StorageManager {
     }
 
     public void clearWarnings(String playerName) {
-        warningsConfig.set(playerName, null);
+        warnsConfig.set(playerName.toLowerCase(), null);
         saveAll();
+    }
+
+    public void addBan(String playerName, String reason, String issuedBy, long durationMillis) {
+        String key = playerName.toLowerCase();
+        long expires = durationMillis > 0 ? System.currentTimeMillis() + durationMillis : -1;
+        bansConfig.set(key + ".reason", reason);
+        bansConfig.set(key + ".by", issuedBy);
+        bansConfig.set(key + ".expires", expires);
+        saveAll();
+    }
+
+    public boolean isBanned(String playerName) {
+        String key = playerName.toLowerCase();
+        if (!bansConfig.contains(key)) return false;
+        long expires = bansConfig.getLong(key + ".expires", -1);
+        if (expires > 0 && System.currentTimeMillis() > expires) {
+            removeBan(playerName);
+            return false;
+        }
+        return true;
+    }
+
+    public void removeBan(String playerName) {
+        bansConfig.set(playerName.toLowerCase(), null);
+        saveAll();
+    }
+
+    public long getBanExpiry(String playerName) {
+        return bansConfig.getLong(playerName.toLowerCase() + ".expires", -1);
+    }
+
+    public Set<String> getBannedPlayers() {
+        Set<String> names = new java.util.HashSet<>(bansConfig.getKeys(false));
+        names.removeIf(name -> !isBanned(name));
+        return names;
+    }
+
+    public String getBanReason(String playerName) {
+        return bansConfig.getString(playerName.toLowerCase() + ".reason", "");
+    }
+
+    public void addMute(String playerName, String reason, String issuedBy, long durationMillis) {
+        String key = playerName.toLowerCase();
+        long expires = durationMillis > 0 ? System.currentTimeMillis() + durationMillis : -1;
+        mutesConfig.set(key + ".reason", reason);
+        mutesConfig.set(key + ".by", issuedBy);
+        mutesConfig.set(key + ".expires", expires);
+        saveAll();
+    }
+
+    public boolean isMuted(String playerName) {
+        String key = playerName.toLowerCase();
+        if (!mutesConfig.contains(key)) return false;
+        long expires = mutesConfig.getLong(key + ".expires", -1);
+        if (expires > 0 && System.currentTimeMillis() > expires) {
+            removeMute(playerName);
+            return false;
+        }
+        return true;
+    }
+
+    public void removeMute(String playerName) {
+        mutesConfig.set(playerName.toLowerCase(), null);
+        saveAll();
+    }
+
+    public long getMuteExpiry(String playerName) {
+        return mutesConfig.getLong(playerName.toLowerCase() + ".expires", -1);
+    }
+
+    public String getMuteReason(String playerName) {
+        return mutesConfig.getString(playerName.toLowerCase() + ".reason", "");
+    }
+
+    public Set<String> getMutedPlayers() {
+        Set<String> names = new java.util.HashSet<>(mutesConfig.getKeys(false));
+        names.removeIf(name -> !isMuted(name));
+        return names;
     }
 }
