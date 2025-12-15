@@ -39,4 +39,16 @@ public class TpaCommand extends BaseCommand {
         messages.sendMessage(target, "tpa-received", "player", requester.getName());
         return true;
     }
+
+    @Override
+    public java.util.List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1 && sender instanceof Player player) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> !p.getUniqueId().equals(player.getUniqueId()))
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        return super.onTabComplete(sender, command, alias, args);
+    }
 }

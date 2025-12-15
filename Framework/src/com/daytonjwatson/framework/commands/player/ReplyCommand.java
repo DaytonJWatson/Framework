@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
 
 public class ReplyCommand extends BaseCommand {
     public ReplyCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
@@ -46,5 +48,19 @@ public class ReplyCommand extends BaseCommand {
         target.sendMessage(messages.getMessage("msg-format-target").replace("%player%", player.getName()).replace("%message%", message));
         playerData.setReplyTarget(player, target);
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1 && sender instanceof Player player) {
+            UUID targetId = playerData.getReplyTarget(player);
+            if (targetId != null) {
+                Optional<? extends Player> target = Bukkit.getOnlinePlayers().stream()
+                        .filter(p -> p.getUniqueId().equals(targetId))
+                        .findFirst();
+                return target.map(value -> List.of(value.getName())).orElseGet(List::of);
+            }
+        }
+        return super.onTabComplete(sender, command, alias, args);
     }
 }
