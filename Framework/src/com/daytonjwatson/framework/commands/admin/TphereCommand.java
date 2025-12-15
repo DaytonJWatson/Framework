@@ -36,9 +36,10 @@ public class TphereCommand extends BaseCommand {
         }
 
         playerData.setLastLocation(target, target.getLocation());
-        target.teleport(player.getLocation());
-        messages.sendMessage(player, "tphere-success", "player", target.getName());
-        messages.sendMessage(target, "tphere-notify", "player", player.getName());
+        playerData.initiateTeleport(target, player.getLocation(), () -> {
+            messages.sendMessage(player, "tphere-success", "player", target.getName());
+            messages.sendMessage(target, "tphere-notify", "player", player.getName());
+        });
         return true;
     }
 

@@ -46,8 +46,7 @@ public class RtpCommand extends BaseCommand {
             return true;
         }
         playerData.setLastLocation(player, player.getLocation());
-        player.teleport(target);
-        messages.sendMessage(player, "rtp-success");
+        playerData.initiateTeleport(player, target, () -> messages.sendMessage(player, "rtp-success"));
         return true;
     }
 }
