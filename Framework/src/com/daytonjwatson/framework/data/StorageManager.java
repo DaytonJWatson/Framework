@@ -55,8 +55,9 @@ public class StorageManager {
     }
 
     public Set<String> getHomes(Player player) {
-        return homesConfig.getConfigurationSection(player.getUniqueId()) != null ?
-                homesConfig.getConfigurationSection(player.getUniqueId()).getKeys(false) : java.util.Collections.emptySet();
+        String playerId = player.getUniqueId().toString();
+        return homesConfig.getConfigurationSection(playerId) != null ?
+                homesConfig.getConfigurationSection(playerId).getKeys(false) : java.util.Collections.emptySet();
     }
 
     public void deleteHome(Player player, String name) {
