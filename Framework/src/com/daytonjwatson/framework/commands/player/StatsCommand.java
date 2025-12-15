@@ -192,12 +192,12 @@ public class StatsCommand extends BaseCommand {
             messages.sendMessage(sender, "stats-context-required");
             throw new IllegalArgumentException("Missing entity context");
         }
-        EntityType type = EntityType.fromName(name.toUpperCase(Locale.ROOT));
-        if (type == null) {
+        try {
+            return EntityType.valueOf(name.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
             messages.sendMessage(sender, "stats-invalid-entity");
-            throw new IllegalArgumentException("Invalid entity type");
+            throw new IllegalArgumentException("Invalid entity type", ex);
         }
-        return type;
     }
 
     private Material parseMaterial(CommandSender sender, String name) {
