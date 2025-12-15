@@ -43,6 +43,7 @@ commands:
     description: Send private message
   reply:
     description: Reply to private message
+    aliases: r
   ignore:
     description: Ignore player
   nickname:
