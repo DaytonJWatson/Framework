@@ -29,7 +29,7 @@ public class FrameworkPlugin extends JavaPlugin {
         saveResource("messages.yml", false);
         this.messageHandler = new MessageHandler(this);
         this.storageManager = new StorageManager(this);
-        this.playerDataManager = new PlayerDataManager(this, storageManager);
+        this.playerDataManager = new PlayerDataManager(this, messageHandler);
         this.api = new FrameworkAPI(storageManager, messageHandler, playerDataManager);
 
         new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler).registerCommands();

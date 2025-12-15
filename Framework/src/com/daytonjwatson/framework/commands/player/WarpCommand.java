@@ -33,8 +33,7 @@ public class WarpCommand extends BaseCommand {
             return true;
         }
         playerData.setLastLocation(player, player.getLocation());
-        player.teleport(warp);
-        messages.sendMessage(player, "warp-teleport", "warp", args[0]);
+        playerData.initiateTeleport(player, warp, () -> messages.sendMessage(player, "warp-teleport", "warp", args[0]));
         return true;
     }
 

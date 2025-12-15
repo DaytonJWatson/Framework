@@ -31,8 +31,9 @@ public class TpallCommand extends BaseCommand {
 
         for (org.bukkit.entity.Player player : org.bukkit.Bukkit.getOnlinePlayers()) {
             if (!player.equals(initiator)) {
-                player.teleport(destination);
-                player.sendMessage(messages.getMessage("tpall-notify").replace("%player%", initiator.getName()));
+                playerData.setLastLocation(player, player.getLocation());
+                playerData.initiateTeleport(player, destination, () ->
+                        player.sendMessage(messages.getMessage("tpall-notify").replace("%player%", initiator.getName())));
             }
         }
 

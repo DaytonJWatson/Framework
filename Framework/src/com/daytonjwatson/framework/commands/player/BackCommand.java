@@ -26,9 +26,10 @@ public class BackCommand extends BaseCommand {
             return true;
         }
         Location current = player.getLocation();
-        player.teleport(last);
-        playerData.setLastLocation(player, current);
-        messages.sendMessage(player, "back-teleport");
+        playerData.initiateTeleport(player, last, () -> {
+            playerData.setLastLocation(player, current);
+            messages.sendMessage(player, "back-teleport");
+        });
         return true;
     }
 }
