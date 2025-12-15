@@ -6,8 +6,13 @@ import com.daytonjwatson.framework.commands.BaseCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class InvseeCommand extends BaseCommand {
     public InvseeCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
@@ -38,5 +43,16 @@ public class InvseeCommand extends BaseCommand {
         viewer.openInventory(target.getInventory());
         viewer.sendMessage(messages.getMessage("invsee-open").replace("%player%", target.getName()));
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return java.util.Collections.emptyList();
     }
 }

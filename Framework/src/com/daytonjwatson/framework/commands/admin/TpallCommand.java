@@ -9,6 +9,9 @@ import com.daytonjwatson.framework.utils.MessageHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collections;
+import java.util.List;
+
 public class TpallCommand extends BaseCommand {
     public TpallCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
         super(plugin, api, storage, playerData, messages);
@@ -35,5 +38,10 @@ public class TpallCommand extends BaseCommand {
 
         messages.sendMessage(initiator, "tpall-success");
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return Collections.emptyList();
     }
 }

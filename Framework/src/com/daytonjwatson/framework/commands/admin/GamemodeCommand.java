@@ -6,8 +6,15 @@ import com.daytonjwatson.framework.commands.BaseCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GamemodeCommand extends BaseCommand {
     public GamemodeCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
@@ -83,5 +90,25 @@ public class GamemodeCommand extends BaseCommand {
                     return null;
                 }
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 1) {
+            List<String> modes = Arrays.asList("survival", "creative", "adventure", "spectator", "0", "1", "2", "3", "s", "c", "a", "sp");
+            String input = args[0].toLowerCase();
+            return modes.stream()
+                    .filter(mode -> mode.startsWith(input))
+                    .collect(Collectors.toList());
+        }
+
+        if (args.length == 2) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(name -> name.toLowerCase().startsWith(args[1].toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
     }
 }
