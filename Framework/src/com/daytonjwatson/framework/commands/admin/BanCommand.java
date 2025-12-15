@@ -6,7 +6,6 @@ import com.daytonjwatson.framework.commands.BaseCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
-import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,6 +23,10 @@ public class BanCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.ban")) {
+            return true;
+        }
+
         if (args.length < 1) {
             messages.sendMessage(sender, "ban-usage");
             return true;
@@ -33,7 +36,6 @@ public class BanCommand extends BaseCommand {
         String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : messages.getMessage("ban-default-reason");
 
         storage.addBan(targetName, reason, sender.getName(), -1);
-        Bukkit.getBanList(BanList.Type.NAME).addBan(targetName, reason, null, sender.getName());
 
         Player target = Bukkit.getPlayerExact(targetName);
         if (target != null) {

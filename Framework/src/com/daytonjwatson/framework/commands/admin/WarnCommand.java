@@ -23,6 +23,10 @@ public class WarnCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.warn")) {
+            return true;
+        }
+
         if (args.length < 2) {
             messages.sendMessage(sender, "warn-usage");
             return true;

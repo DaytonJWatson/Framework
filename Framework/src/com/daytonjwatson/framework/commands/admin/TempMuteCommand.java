@@ -24,6 +24,10 @@ public class TempMuteCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.tempmute")) {
+            return true;
+        }
+
         if (args.length < 2) {
             messages.sendMessage(sender, "tempmute-usage");
             return true;

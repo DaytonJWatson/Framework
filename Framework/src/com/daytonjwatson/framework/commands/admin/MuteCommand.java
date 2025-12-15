@@ -23,6 +23,10 @@ public class MuteCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.mute")) {
+            return true;
+        }
+
         if (args.length < 1) {
             messages.sendMessage(sender, "mute-usage");
             return true;

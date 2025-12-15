@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -24,6 +25,30 @@ public class PlayerActivityListener implements Listener {
         this.messages = messages;
         this.playerData = playerData;
         this.storage = storage;
+    }
+
+    @EventHandler
+    public void onLogin(PlayerLoginEvent event) {
+        String playerName = event.getPlayer().getName();
+        if (!storage.isBanned(playerName)) {
+            return;
+        }
+
+        long expiry = storage.getBanExpiry(playerName);
+        String reason = storage.getBanReason(playerName);
+        if (reason == null || reason.isEmpty()) {
+            reason = messages.getMessage("ban-default-reason");
+        }
+
+        if (expiry > 0) {
+            String remaining = TimeUtil.formatDuration(expiry - System.currentTimeMillis());
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, messages.getMessage("tempban-kick-message")
+                    .replace("%reason%", reason)
+                    .replace("%time%", remaining));
+        } else {
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, messages.getMessage("ban-kick-message")
+                    .replace("%reason%", reason));
+        }
     }
 
     @EventHandler

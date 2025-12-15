@@ -7,7 +7,6 @@ import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 import com.daytonjwatson.framework.utils.TimeUtil;
-import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +14,6 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +24,10 @@ public class TempBanCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.tempban")) {
+            return true;
+        }
+
         if (args.length < 2) {
             messages.sendMessage(sender, "tempban-usage");
             return true;
@@ -41,7 +43,6 @@ public class TempBanCommand extends BaseCommand {
         String reason = args.length > 2 ? String.join(" ", Arrays.copyOfRange(args, 2, args.length)) : messages.getMessage("ban-default-reason");
         storage.addBan(targetName, reason, sender.getName(), duration);
 
-        Bukkit.getBanList(BanList.Type.NAME).addBan(targetName, reason, new Date(System.currentTimeMillis() + duration), sender.getName());
         Player target = Bukkit.getPlayerExact(targetName);
         if (target != null) {
             target.kickPlayer(messages.getMessage("tempban-kick-message")

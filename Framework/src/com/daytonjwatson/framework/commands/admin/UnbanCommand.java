@@ -23,6 +23,10 @@ public class UnbanCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.unban")) {
+            return true;
+        }
+
         if (args.length < 1) {
             messages.sendMessage(sender, "unban-usage");
             return true;
@@ -35,7 +39,6 @@ public class UnbanCommand extends BaseCommand {
         }
 
         storage.removeBan(targetName);
-        Bukkit.getBanList(BanList.Type.NAME).pardon(targetName);
         messages.sendMessage(sender, "unban-success", "player", targetName);
         return true;
     }
