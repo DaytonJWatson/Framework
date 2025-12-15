@@ -40,7 +40,7 @@ public class HealCommand extends BaseCommand {
             target = (org.bukkit.entity.Player) sender;
         }
 
-        double maxHealth = target.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getValue();
+        double maxHealth = target.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).getValue();
         target.setHealth(maxHealth);
         target.setFoodLevel(20);
         target.setSaturation(20f);

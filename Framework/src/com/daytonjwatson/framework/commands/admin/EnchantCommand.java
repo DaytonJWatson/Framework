@@ -21,7 +21,8 @@ public class EnchantCommand extends BaseCommand {
         super(plugin, api, storage, playerData, messages);
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!requirePermission(sender, "framework.enchant")) {
             return true;
@@ -72,7 +73,8 @@ public class EnchantCommand extends BaseCommand {
         return true;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             String input = args[0].toLowerCase();
