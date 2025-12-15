@@ -1,7 +1,9 @@
 only-players: "&cOnly players can use this command."
-help:
-  - "&eFramework Commands"
-  - "&7/warp, /home, /spawn, /tpa, /msg, /rtp"
+help-header: "&eAvailable Commands"
+help-format: "&7/%command% - &f%description%"
+help-footer: "&eYou can use the commands above."
+help-none: "&cYou do not have access to any commands."
+help-no-description: "No description provided."
 warp-usage: "&cUsage: /warp <name>"
 setwarp-usage: "&cUsage: /setwarp <name>"
 warp-set: "&aSet warp %warp%."
