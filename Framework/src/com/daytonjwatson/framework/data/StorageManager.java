@@ -1,16 +1,17 @@
 package com.daytonjwatson.framework.data;
 
-import com.daytonjwatson.framework.FrameworkPlugin;
-import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import com.daytonjwatson.framework.FrameworkPlugin;
 
 public class StorageManager {
     private final FrameworkPlugin plugin;

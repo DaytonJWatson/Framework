@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class FrameworkPlugin extends JavaPlugin {
 
-    private static FrameworkPlugin instance;
+    public static FrameworkPlugin instance;
     private MessageHandler messageHandler;
     private StorageManager storageManager;
     private PlayerDataManager playerDataManager;

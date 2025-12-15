@@ -61,8 +61,8 @@ public class CommandRegistrar {
         register("time", new TimeCommand(plugin, api, storage, playerData, messages));
         register("weather", new WeatherCommand(plugin, api, storage, playerData, messages));
         register("gamemode", new GamemodeCommand(plugin, api, storage, playerData, messages));
-        register("tp", new TeleportCommand(plugin, api, storage, playerData, messages));
-        register("tpall", new TpAllCommand(plugin, api, storage, playerData, messages));
+        register("tp", new TpCommand(plugin, api, storage, playerData, messages));
+        register("tpall", new TpallCommand(plugin, api, storage, playerData, messages));
         register("fly", new FlyCommand(plugin, api, storage, playerData, messages));
         register("god", new GodCommand(plugin, api, storage, playerData, messages));
         register("heal", new HealCommand(plugin, api, storage, playerData, messages));

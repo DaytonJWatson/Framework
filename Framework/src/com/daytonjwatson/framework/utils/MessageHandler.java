@@ -1,13 +1,14 @@
 package com.daytonjwatson.framework.utils;
 
-import com.daytonjwatson.framework.FrameworkPlugin;
-import net.md_5.bungee.api.ChatColor;
+import java.io.File;
+import java.util.List;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.util.List;
+import com.daytonjwatson.framework.FrameworkPlugin;
 
 public class MessageHandler {
 
