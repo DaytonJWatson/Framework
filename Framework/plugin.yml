@@ -17,6 +17,7 @@ commands:
     description: Teleport to spawn
   setspawn:
     description: Set spawn
+    permission: framework.setspawn
   warp:
     description: Teleport to warp
   setwarp:

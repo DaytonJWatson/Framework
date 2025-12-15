@@ -18,6 +18,7 @@ public class SetSpawnCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.setspawn")) return true;
         if (!requirePlayer(sender)) return true;
         Player player = (Player) sender;
         Location loc = player.getLocation();
