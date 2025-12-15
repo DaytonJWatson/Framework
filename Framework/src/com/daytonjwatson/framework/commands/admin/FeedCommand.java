@@ -16,7 +16,35 @@ public class FeedCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        if (!requirePermission(sender, "framework.feed")) {
+            return true;
+        }
+
+        if (args.length == 0 && !requirePlayer(sender)) {
+            return true;
+        }
+
+        org.bukkit.entity.Player target;
+        if (args.length > 0) {
+            target = org.bukkit.Bukkit.getPlayerExact(args[0]);
+            if (target == null) {
+                messages.sendMessage(sender, "player-not-found");
+                return true;
+            }
+        } else {
+            target = (org.bukkit.entity.Player) sender;
+        }
+
+        target.setFoodLevel(20);
+        target.setSaturation(20f);
+        target.setExhaustion(0f);
+
+        if (target.equals(sender)) {
+            messages.sendMessage(target, "feed-self");
+        } else {
+            messages.sendMessage(sender, "feed-other", "player", target.getName());
+            messages.sendMessage(target, "feed-notify", "player", sender.getName());
+        }
         return true;
     }
 }

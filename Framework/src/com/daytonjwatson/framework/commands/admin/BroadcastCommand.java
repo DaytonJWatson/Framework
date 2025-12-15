@@ -16,7 +16,17 @@ public class BroadcastCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        messages.sendMessage(sender, "coming-soon");
+        if (!requirePermission(sender, "framework.broadcast")) {
+            return true;
+        }
+
+        if (args.length == 0) {
+            messages.sendMessage(sender, "broadcast-usage");
+            return true;
+        }
+
+        String message = String.join(" ", args);
+        plugin.getServer().broadcastMessage(messages.getMessage("broadcast-format").replace("%message%", message));
         return true;
     }
 }
