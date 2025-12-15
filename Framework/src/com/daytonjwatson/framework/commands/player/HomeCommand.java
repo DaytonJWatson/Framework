@@ -30,8 +30,7 @@ public class HomeCommand extends BaseCommand {
             return true;
         }
         playerData.setLastLocation(player, player.getLocation());
-        player.teleport(home);
-        messages.sendMessage(player, "home-teleport", "home", name);
+        playerData.initiateTeleport(player, home, () -> messages.sendMessage(player, "home-teleport", "home", name));
         return true;
     }
 

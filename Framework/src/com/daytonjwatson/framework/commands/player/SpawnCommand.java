@@ -30,8 +30,7 @@ public class SpawnCommand extends BaseCommand {
         float pitch = (float) plugin.getConfig().getDouble("spawn.pitch", 0f);
         Location loc = new Location(world, x, y, z, yaw, pitch);
         playerData.setLastLocation(player, player.getLocation());
-        player.teleport(loc);
-        messages.sendMessage(player, "teleported-spawn");
+        playerData.initiateTeleport(player, loc, () -> messages.sendMessage(player, "teleported-spawn"));
         return true;
     }
 }

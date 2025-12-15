@@ -36,8 +36,7 @@ public class TpCommand extends BaseCommand {
                 return true;
             }
             playerData.setLastLocation(player, player.getLocation());
-            player.teleport(target.getLocation());
-            messages.sendMessage(player, "tp-success", "player", target.getName());
+            playerData.initiateTeleport(player, target.getLocation(), () -> messages.sendMessage(player, "tp-success", "player", target.getName()));
             return true;
         }
 
@@ -49,9 +48,10 @@ public class TpCommand extends BaseCommand {
                 return true;
             }
             playerData.setLastLocation(from, from.getLocation());
-            from.teleport(to.getLocation());
-            messages.sendMessage(sender, "tp-success-other", "player", from.getName());
-            messages.sendMessage(from, "tp-success", "player", to.getName());
+            playerData.initiateTeleport(from, to.getLocation(), () -> {
+                messages.sendMessage(sender, "tp-success-other", "player", from.getName());
+                messages.sendMessage(from, "tp-success", "player", to.getName());
+            });
             return true;
         }
 

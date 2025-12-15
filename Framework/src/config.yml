@@ -8,6 +8,13 @@ homes:
 rtp:
   radius: 5000 # Maximum distance in blocks for random teleport searches
 
+# Teleport behavior
+teleport:
+  warmup-seconds: 0 # Delay before teleporting (allows movement cancellation)
+  cooldown-seconds: 0 # Cooldown applied after a teleport
+  movement-threshold: 0.35 # Distance in blocks a player can move during warmup before canceling
+  movement-check-interval-ticks: 5 # How often to check for movement during warmup
+
 # Chat appearance settings
 chat:
   format: "&7%player% &8» &r%message%" # Supports %player%/%displayname% and %message% placeholders
