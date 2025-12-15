@@ -1,2 +1,17 @@
-# Framework
-# 0.0.1
+# Framework configuration
+homes:
+  limit: 3
+rtp:
+  radius: 5000
+messages:
+  motd: "&aWelcome to the server!"
+  rules:
+    - "&eBe respectful"
+    - "&eNo griefing"
+spawn:
+  world: world
+  x: 0
+  y: 64
+  z: 0
+  yaw: 0
+  pitch: 0

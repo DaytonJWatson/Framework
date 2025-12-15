@@ -1,7 +1,111 @@
 name: Framework
+main: com.daytonjwatson.framework.FrameworkPlugin
 author: DaytonJWatson
 description: Framework plugin for MC servers
 version: 0.0.1
 api-version: '1.21'
-main: com.daytonjwatson.framework.FrameworkPlugin
 commands:
+  help:
+    description: Show help
+  list:
+    description: List players
+  motd:
+    description: Show message of the day
+  rules:
+    description: Show rules
+  spawn:
+    description: Teleport to spawn
+  setspawn:
+    description: Set spawn
+  warp:
+    description: Teleport to warp
+  setwarp:
+    description: Create a warp
+  warps:
+    description: List warps
+  home:
+    description: Teleport to home
+  sethome:
+    description: Set a home
+  delhome:
+    description: Delete a home
+  homes:
+    description: List homes
+  tpa:
+    description: Request teleport
+  tpaccept:
+    description: Accept teleport request
+  tpdeny:
+    description: Deny teleport request
+  back:
+    description: Teleport back
+  msg:
+    description: Send private message
+  reply:
+    description: Reply to private message
+  ignore:
+    description: Ignore player
+  nickname:
+    description: Set nickname
+  realname:
+    description: Lookup real name
+  rtp:
+    description: Random teleport
+  trash:
+    description: Open trash inventory
+  enderchest:
+    description: Open ender chest
+  workbench:
+    description: Open workbench
+  stats:
+    description: View stats
+  playtime:
+    description: View playtime
+  ban:
+    description: Ban player
+  tempban:
+    description: Temporarily ban player
+  unban:
+    description: Unban player
+  mute:
+    description: Mute player
+  tempmute:
+    description: Temp mute player
+  kick:
+    description: Kick player
+  warn:
+    description: Warn player
+  warnings:
+    description: View warnings
+  time:
+    description: Set time
+  weather:
+    description: Set weather
+  gamemode:
+    description: Set gamemode
+  tp:
+    description: Teleport to player
+  tpall:
+    description: Teleport all to you
+  fly:
+    description: Toggle flight
+  god:
+    description: Toggle god mode
+  heal:
+    description: Heal
+  feed:
+    description: Feed
+  vanish:
+    description: Toggle vanish
+  invsee:
+    description: View inventory
+  endersee:
+    description: View ender chest
+  clear:
+    description: Clear inventory
+  give:
+    description: Give items
+  enchant:
+    description: Enchant item
+  broadcast:
+    description: Broadcast message
