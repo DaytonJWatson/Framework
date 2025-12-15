@@ -107,6 +107,7 @@ commands:
     description: Feed
   vanish:
     description: Toggle vanish
+	aliases: v
   invsee:
     description: View inventory
   endersee:
