@@ -6,11 +6,13 @@ public class TeleportRequest {
     private final UUID from;
     private final UUID to;
     private final long createdAt;
+    private final boolean teleportHere;
 
-    public TeleportRequest(UUID from, UUID to, long createdAt) {
+    public TeleportRequest(UUID from, UUID to, long createdAt, boolean teleportHere) {
         this.from = from;
         this.to = to;
         this.createdAt = createdAt;
+        this.teleportHere = teleportHere;
     }
 
     public UUID getFrom() {
@@ -23,5 +25,9 @@ public class TeleportRequest {
 
     public long getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isTeleportHere() {
+        return teleportHere;
     }
 }

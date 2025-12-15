@@ -1,19 +1,20 @@
 package com.daytonjwatson.framework.commands.player;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.api.FrameworkAPI;
 import com.daytonjwatson.framework.commands.BaseCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class TpaCommand extends BaseCommand {
-    public TpaCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
+import java.util.stream.Collectors;
+
+public class TpahereCommand extends BaseCommand {
+    public TpahereCommand(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
         super(plugin, api, storage, playerData, messages);
     }
 
@@ -21,9 +22,10 @@ public class TpaCommand extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!requirePlayer(sender)) return true;
         if (args.length == 0) {
-            messages.sendMessage(sender, "tpa-usage");
+            messages.sendMessage(sender, "tpahere-usage");
             return true;
         }
+
         Player requester = (Player) sender;
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
@@ -34,9 +36,10 @@ public class TpaCommand extends BaseCommand {
             messages.sendMessage(sender, "tpa-self");
             return true;
         }
-        playerData.addTpaRequest(requester, target, false);
-        messages.sendMessage(requester, "tpa-sent", "player", target.getName());
-        messages.sendMessage(target, "tpa-received", "player", requester.getName());
+
+        playerData.addTpaRequest(requester, target, true);
+        messages.sendMessage(requester, "tpahere-sent", "player", target.getName());
+        messages.sendMessage(target, "tpahere-received", "player", requester.getName());
         return true;
     }
 
@@ -47,7 +50,7 @@ public class TpaCommand extends BaseCommand {
                     .filter(p -> !p.getUniqueId().equals(player.getUniqueId()))
                     .map(Player::getName)
                     .filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase()))
-                    .collect(java.util.stream.Collectors.toList());
+                    .collect(Collectors.toList());
         }
         return super.onTabComplete(sender, command, alias, args);
     }

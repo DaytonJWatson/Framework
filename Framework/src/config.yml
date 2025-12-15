@@ -1,13 +1,29 @@
 # Framework configuration
+
+# Home settings
 homes:
-  limit: 3
+  limit: 3 # Maximum number of homes each player can set
+
+# Random teleport settings
 rtp:
-  radius: 5000
-messages:
-  motd: "&aWelcome to the server!"
-  rules:
-    - "&eBe respectful"
-    - "&eNo griefing"
+  radius: 5000 # Maximum distance in blocks for random teleport searches
+
+# Chat appearance settings
+chat:
+  format: "&7%player% &8» &r%message%" # Supports %player%/%displayname% and %message% placeholders
+
+# Join and quit announcements
+player-messages:
+  join: "&e%player% joined the game" # Message shown when a player joins
+  quit: "&e%player% left the game" # Message shown when a player quits
+
+# Death handling
+# respawn: spawn -> always respawn at the configured spawn location
+# respawn: bed   -> respawn at the player's bed when available, otherwise spawn
+death:
+  respawn: "spawn"
+
+# Spawn location used for /spawn and death respawns when configured
 spawn:
   world: world
   x: 0
@@ -15,3 +31,10 @@ spawn:
   z: 0
   yaw: 0
   pitch: 0
+
+# General server messages
+messages:
+  motd: "&aWelcome to the server!" # Message of the day shown with /motd
+  rules:
+    - "&eBe respectful" # Listed with /rules
+    - "&eNo griefing"

@@ -6,6 +6,10 @@ import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 import com.daytonjwatson.framework.utils.TimeUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,15 +17,18 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.Iterator;
 
 public class PlayerActivityListener implements Listener {
+    private final FrameworkPlugin plugin;
     private final MessageHandler messages;
     private final PlayerDataManager playerData;
     private final StorageManager storage;
 
     public PlayerActivityListener(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
+        this.plugin = plugin;
         this.messages = messages;
         this.playerData = playerData;
         this.storage = storage;
@@ -54,13 +61,15 @@ public class PlayerActivityListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        event.setJoinMessage(messages.getMessage("join").replace("%player%", player.getName()));
+        String joinMessage = plugin.getConfig().getString("player-messages.join", messages.getMessage("join"));
+        event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', joinMessage).replace("%player%", player.getName()));
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        event.setQuitMessage(messages.getMessage("quit").replace("%player%", player.getName()));
+        String quitMessage = plugin.getConfig().getString("player-messages.quit", messages.getMessage("quit"));
+        event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', quitMessage).replace("%player%", player.getName()));
         playerData.setLastLocation(player, player.getLocation());
     }
 
@@ -82,5 +91,38 @@ public class PlayerActivityListener implements Listener {
                 iterator.remove();
             }
         }
+
+        String format = plugin.getConfig().getString("chat.format", "&7%player% &8» &r%message%");
+        format = ChatColor.translateAlternateColorCodes('&', format)
+                .replace("%displayname%", "%1$s")
+                .replace("%player%", "%1$s")
+                .replace("%message%", "%2$s");
+        event.setFormat(format);
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        String respawnPreference = plugin.getConfig().getString("death.respawn", "spawn");
+
+        if ("bed".equalsIgnoreCase(respawnPreference)) {
+            Location bedSpawn = player.getBedSpawnLocation();
+            if (bedSpawn != null) {
+                event.setRespawnLocation(bedSpawn);
+                return;
+            }
+        }
+
+        World world = Bukkit.getWorld(plugin.getConfig().getString("spawn.world", player.getWorld().getName()));
+        if (world == null) {
+            world = player.getWorld();
+        }
+        double x = plugin.getConfig().getDouble("spawn.x", player.getWorld().getSpawnLocation().getX());
+        double y = plugin.getConfig().getDouble("spawn.y", player.getWorld().getSpawnLocation().getY());
+        double z = plugin.getConfig().getDouble("spawn.z", player.getWorld().getSpawnLocation().getZ());
+        float yaw = (float) plugin.getConfig().getDouble("spawn.yaw", 0f);
+        float pitch = (float) plugin.getConfig().getDouble("spawn.pitch", 0f);
+        Location spawnLocation = new Location(world, x, y, z, yaw, pitch);
+        event.setRespawnLocation(spawnLocation);
     }
 }

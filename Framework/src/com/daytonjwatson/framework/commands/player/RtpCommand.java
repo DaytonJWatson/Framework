@@ -27,6 +27,7 @@ public class RtpCommand extends BaseCommand {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!requirePlayer(sender)) return true;
         Player player = (Player) sender;
+        messages.sendMessage(player, "rtp-start");
         int radius = plugin.getConfig().getInt("rtp.radius", 5000);
         World world = player.getWorld();
         Location target = null;

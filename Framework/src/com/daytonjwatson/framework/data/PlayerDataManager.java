@@ -50,8 +50,8 @@ public class PlayerDataManager {
         return ignores.getOrDefault(player.getUniqueId(), Collections.emptySet()).contains(target.getUniqueId());
     }
 
-    public void addTpaRequest(Player from, Player to) {
-        tpaRequests.put(to.getUniqueId(), new TeleportRequest(from.getUniqueId(), to.getUniqueId(), System.currentTimeMillis()));
+    public void addTpaRequest(Player from, Player to, boolean teleportHere) {
+        tpaRequests.put(to.getUniqueId(), new TeleportRequest(from.getUniqueId(), to.getUniqueId(), System.currentTimeMillis(), teleportHere));
     }
 
     public TeleportRequest getTpaRequest(Player to) {
