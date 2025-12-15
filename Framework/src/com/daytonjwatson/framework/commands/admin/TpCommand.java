@@ -21,6 +21,7 @@ public class TpCommand extends BaseCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!requirePermission(sender, "framework.tp")) return true;
         if (args.length == 0) {
             messages.sendMessage(sender, "tp-usage");
             return true;

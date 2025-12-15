@@ -58,7 +58,8 @@ public class NicknameCommand extends BaseCommand {
         }
 
         String colored = ChatColor.translateAlternateColorCodes('&', nickname);
-        target.setDisplayName(colored);
+        String displayName = colored + ChatColor.RESET;
+        target.setDisplayName(displayName);
         target.setPlayerListName(colored);
 
         messages.sendMessage(sender, target.equals(sender) ? "nickname-set" : "nickname-set-other", "player", target.getName());

@@ -33,6 +33,8 @@ commands:
     description: List homes
   tpa:
     description: Request teleport
+  tpahere:
+    description: Request a player to teleport to you
   tpaccept:
     description: Accept teleport request
   tpdeny:
@@ -91,6 +93,8 @@ commands:
     aliases: gm
   tp:
     description: Teleport to player
+  tphere:
+    description: Teleport a player to you
   tpall:
     description: Teleport all to you
   fly:

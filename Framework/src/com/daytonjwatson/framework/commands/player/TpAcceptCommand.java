@@ -31,8 +31,13 @@ public class TpAcceptCommand extends BaseCommand {
         }
         Player from = Bukkit.getPlayer(request.getFrom());
         if (from != null) {
-            playerData.setLastLocation(from, from.getLocation());
-            from.teleport(player.getLocation());
+            if (request.isTeleportHere()) {
+                playerData.setLastLocation(player, player.getLocation());
+                player.teleport(from.getLocation());
+            } else {
+                playerData.setLastLocation(from, from.getLocation());
+                from.teleport(player.getLocation());
+            }
             messages.sendMessage(from, "tpa-accepted", "player", player.getName());
             messages.sendMessage(player, "tpa-accepted", "player", from.getName());
         }
