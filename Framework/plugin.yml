@@ -55,8 +55,10 @@ commands:
     description: Open trash inventory
   enderchest:
     description: Open ender chest
+    aliases: ec
   workbench:
     description: Open workbench
+    aliases: wb
   stats:
     description: View stats
   playtime:
