@@ -195,4 +195,10 @@ public class StorageManager {
     public String getMuteReason(String playerName) {
         return mutesConfig.getString(playerName.toLowerCase() + ".reason", "");
     }
+
+    public Set<String> getMutedPlayers() {
+        Set<String> names = new java.util.HashSet<>(mutesConfig.getKeys(false));
+        names.removeIf(name -> !isMuted(name));
+        return names;
+    }
 }
