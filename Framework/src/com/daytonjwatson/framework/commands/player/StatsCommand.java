@@ -90,8 +90,45 @@ public class StatsCommand extends BaseCommand {
             return completions;
         }
 
-        ParseResult parseResult = parseArguments(sender, Arrays.asList(args).subList(0, args.length - 1), false);
-        Statistic statistic = parseResult.statistic();
+        boolean firstIsPlayer = Bukkit.getPlayer(args[0]) != null;
+
+        if (firstIsPlayer) {
+            if (args.length == 2) {
+                completions.addAll(collectStatisticNames(lastArg));
+                return completions;
+            }
+
+            Statistic statistic = parseStatistic(args[1]);
+            if (statistic == null) {
+                completions.addAll(collectStatisticNames(lastArg));
+                return completions;
+            }
+
+            switch (statistic.getType()) {
+                case ENTITY -> {
+                    if (args.length == 3) {
+                        completions.addAll(collectEntityTypes(lastArg));
+                    } else if (args.length == 4) {
+                        completions.addAll(collectShareFlag(lastArg));
+                    }
+                }
+                case BLOCK, ITEM -> {
+                    if (args.length == 3) {
+                        completions.addAll(collectMaterialTypes(lastArg));
+                    } else if (args.length == 4) {
+                        completions.addAll(collectShareFlag(lastArg));
+                    }
+                }
+                case UNTYPED -> {
+                    if (args.length == 3) {
+                        completions.addAll(collectShareFlag(lastArg));
+                    }
+                }
+            }
+            return completions;
+        }
+
+        Statistic statistic = parseStatistic(args[0]);
         if (statistic == null) {
             completions.addAll(collectPlayerNames(lastArg));
             completions.addAll(collectStatisticNames(lastArg));
@@ -99,9 +136,31 @@ public class StatsCommand extends BaseCommand {
         }
 
         switch (statistic.getType()) {
-            case ENTITY -> completions.addAll(collectEntityTypes(lastArg));
-            case BLOCK, ITEM -> completions.addAll(collectMaterialTypes(lastArg));
-            default -> completions.addAll(collectPlayerNames(lastArg));
+            case ENTITY -> {
+                if (args.length == 2) {
+                    completions.addAll(collectEntityTypes(lastArg));
+                } else if (args.length == 3) {
+                    completions.addAll(collectPlayerNames(lastArg));
+                } else if (args.length == 4) {
+                    completions.addAll(collectShareFlag(lastArg));
+                }
+            }
+            case BLOCK, ITEM -> {
+                if (args.length == 2) {
+                    completions.addAll(collectMaterialTypes(lastArg));
+                } else if (args.length == 3) {
+                    completions.addAll(collectPlayerNames(lastArg));
+                } else if (args.length == 4) {
+                    completions.addAll(collectShareFlag(lastArg));
+                }
+            }
+            case UNTYPED -> {
+                if (args.length == 2) {
+                    completions.addAll(collectPlayerNames(lastArg));
+                } else if (args.length == 3) {
+                    completions.addAll(collectShareFlag(lastArg));
+                }
+            }
         }
 
         return completions;
@@ -127,32 +186,38 @@ public class StatsCommand extends BaseCommand {
             return ParseResult.failed();
         }
 
-        String first = arguments.get(0);
-        Player potentialPlayer = Bukkit.getPlayer(first);
-        Player target;
-        String statisticName;
-        String subValue = null;
+        List<String> working = new ArrayList<>(arguments);
+        Player target = null;
 
-        if (potentialPlayer != null && arguments.size() >= 2) {
-            target = potentialPlayer;
-            statisticName = arguments.get(1);
-            if (arguments.size() >= 3) {
-                subValue = arguments.get(2);
+        if (working.size() >= 2) {
+            Player first = Bukkit.getPlayer(working.get(0));
+            if (first != null) {
+                target = first;
+                working.remove(0);
             }
-        } else {
-            target = sender instanceof Player player ? player : null;
-            statisticName = first;
-            if (arguments.size() >= 2) {
-                subValue = arguments.get(1);
+        }
+
+        if (target == null && working.size() >= 2) {
+            Player last = Bukkit.getPlayer(working.get(working.size() - 1));
+            if (last != null) {
+                target = last;
+                working.remove(working.size() - 1);
             }
         }
 
         if (target == null) {
+            target = sender instanceof Player player ? player : null;
+        }
+
+        if (target == null || working.isEmpty()) {
             if (notify) {
-                messages.sendMessage(sender, "only-players");
+                messages.sendMessage(sender, working.isEmpty() ? "stats-usage" : "only-players");
             }
             return ParseResult.failed();
         }
+
+        String statisticName = working.get(0);
+        String subValue = working.size() >= 2 ? working.get(1) : null;
 
         Statistic statistic = parseStatistic(statisticName);
         if (statistic == null) {
