@@ -47,6 +47,9 @@ public class MuteCommand extends BaseCommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 0) {
+            return Collections.singletonList(messages.getMessage("mute-usage"));
+        }
         if (args.length == 1) {
             return Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)

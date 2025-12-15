@@ -52,6 +52,9 @@ public class WarningsCommand extends BaseCommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 0) {
+            return Collections.singletonList(messages.getMessage("warnings-usage"));
+        }
         if (args.length == 1) {
             return Bukkit.getOnlinePlayers().stream()
                     .map(player -> player.getName())

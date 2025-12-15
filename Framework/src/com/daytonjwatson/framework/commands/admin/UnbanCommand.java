@@ -45,6 +45,9 @@ public class UnbanCommand extends BaseCommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length == 0) {
+            return Collections.singletonList(messages.getMessage("unban-usage"));
+        }
         if (args.length == 1) {
             List<String> names = new ArrayList<>(storage.getBannedPlayers());
             return names.stream()
