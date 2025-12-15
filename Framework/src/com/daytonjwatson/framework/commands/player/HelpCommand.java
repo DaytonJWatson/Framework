@@ -70,8 +70,16 @@ public class HelpCommand extends BaseCommand {
                 description = messages.getMessage("help-no-description");
             }
 
+            String usage = pluginCommand.getUsage();
+            if (usage == null || usage.isEmpty()) {
+                usage = "/" + pluginCommand.getName();
+            } else if (!usage.startsWith("/")) {
+                usage = "/" + usage;
+            }
+
             sender.sendMessage(messages.getMessage("help-format")
                     .replace("%command%", pluginCommand.getName())
+                    .replace("%usage%", usage)
                     .replace("%description%", description));
         }
 
