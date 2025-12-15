@@ -106,7 +106,8 @@ public class PlayerActivityListener implements Listener {
         String respawnPreference = plugin.getConfig().getString("death.respawn", "spawn");
 
         if ("bed".equalsIgnoreCase(respawnPreference)) {
-            Location bedSpawn = player.getBedSpawnLocation();
+            @SuppressWarnings("deprecation")
+			Location bedSpawn = player.getBedSpawnLocation();
             if (bedSpawn != null) {
                 event.setRespawnLocation(bedSpawn);
                 return;
