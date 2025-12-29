@@ -71,6 +71,9 @@ commands:
   ban:
     description: Ban player
     permission: framework.ban
+  playersettings:
+    description: Open player-specific settings
+    permission: framework.playersettings
   tempban:
     description: Temporarily ban player
     permission: framework.tempban

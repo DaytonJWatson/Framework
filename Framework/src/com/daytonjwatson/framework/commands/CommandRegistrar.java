@@ -42,6 +42,7 @@ import com.daytonjwatson.framework.commands.player.ListCommand;
 import com.daytonjwatson.framework.commands.player.MotdCommand;
 import com.daytonjwatson.framework.commands.player.MsgCommand;
 import com.daytonjwatson.framework.commands.player.PlaytimeCommand;
+import com.daytonjwatson.framework.commands.player.PlayerSettingsCommand;
 import com.daytonjwatson.framework.commands.player.RealnameCommand;
 import com.daytonjwatson.framework.commands.player.ReplyCommand;
 import com.daytonjwatson.framework.commands.player.RtpCommand;
@@ -61,6 +62,7 @@ import com.daytonjwatson.framework.commands.player.WeatherCommand;
 import com.daytonjwatson.framework.commands.player.WorkbenchCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class CommandRegistrar {
@@ -70,14 +72,16 @@ public class CommandRegistrar {
     private final PlayerDataManager playerData;
     private final MessageHandler messages;
     private final AutoCropManager autoCropManager;
+    private final PlayerSettingsManager playerSettingsManager;
 
-    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages, AutoCropManager autoCropManager) {
+    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages, AutoCropManager autoCropManager, PlayerSettingsManager playerSettingsManager) {
         this.plugin = plugin;
         this.api = api;
         this.storage = storage;
         this.playerData = playerData;
         this.messages = messages;
         this.autoCropManager = autoCropManager;
+        this.playerSettingsManager = playerSettingsManager;
     }
 
     public void registerCommands() {
@@ -105,6 +109,7 @@ public class CommandRegistrar {
         register("nickname", new NicknameCommand(plugin, api, storage, playerData, messages));
         register("realname", new RealnameCommand(plugin, api, storage, playerData, messages));
         register("rtp", new RtpCommand(plugin, api, storage, playerData, messages));
+        register("playersettings", new PlayerSettingsCommand(plugin, api, storage, playerData, messages, playerSettingsManager));
         register("trash", new TrashCommand(plugin, api, storage, playerData, messages));
         register("enderchest", new EnderChestCommand(plugin, api, storage, playerData, messages));
         register("workbench", new WorkbenchCommand(plugin, api, storage, playerData, messages));
