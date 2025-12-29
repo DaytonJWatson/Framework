@@ -139,7 +139,7 @@ public class PlayerSettingsListener implements Listener {
 
         Player player = (Player) event.getEntity();
         PlayerSettings settings = settingsManager.getSettings(player);
-        if (settings.isNoFallDamage()) {
+        if (settings.isNoFallDamage() && player.hasPermission("framework.nofall")) {
             event.setCancelled(true);
         }
     }
