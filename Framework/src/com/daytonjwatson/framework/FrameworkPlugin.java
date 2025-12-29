@@ -37,8 +37,8 @@ public class FrameworkPlugin extends JavaPlugin {
         this.storageManager = new StorageManager(this);
         this.playerDataManager = new PlayerDataManager(this, messageHandler);
         this.api = new FrameworkAPI(storageManager, messageHandler, playerDataManager);
-        this.autoCropManager = new AutoCropManager(this, storageManager, messageHandler);
         this.playerSettingsManager = new PlayerSettingsManager(this, storageManager, messageHandler);
+        this.autoCropManager = new AutoCropManager(this, storageManager, messageHandler, playerSettingsManager);
 
         new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager, playerSettingsManager).registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerActivityListener(this, api, storageManager, playerDataManager, messageHandler), this);
