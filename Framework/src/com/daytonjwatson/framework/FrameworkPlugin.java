@@ -4,6 +4,8 @@ import com.daytonjwatson.framework.api.FrameworkAPI;
 import com.daytonjwatson.framework.commands.CommandRegistrar;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.autocrop.AutoCropManager;
+import com.daytonjwatson.framework.autocrop.AutoCropListener;
 import com.daytonjwatson.framework.listeners.PlayerActivityListener;
 import com.daytonjwatson.framework.utils.MessageHandler;
 import org.bukkit.Bukkit;
@@ -17,6 +19,7 @@ public class FrameworkPlugin extends JavaPlugin {
     private StorageManager storageManager;
     private PlayerDataManager playerDataManager;
     private FrameworkAPI api;
+    private AutoCropManager autoCropManager;
 
     @Override
     public void onLoad() {
@@ -31,9 +34,11 @@ public class FrameworkPlugin extends JavaPlugin {
         this.storageManager = new StorageManager(this);
         this.playerDataManager = new PlayerDataManager(this, messageHandler);
         this.api = new FrameworkAPI(storageManager, messageHandler, playerDataManager);
+        this.autoCropManager = new AutoCropManager(this, storageManager, messageHandler);
 
-        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler).registerCommands();
+        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager).registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerActivityListener(this, api, storageManager, playerDataManager, messageHandler), this);
+        Bukkit.getPluginManager().registerEvents(new AutoCropListener(autoCropManager), this);
     }
 
     @Override
@@ -60,6 +65,10 @@ public class FrameworkPlugin extends JavaPlugin {
 
     public FrameworkAPI getFrameworkAPI() {
         return api;
+    }
+
+    public AutoCropManager getAutoCropManager() {
+        return autoCropManager;
     }
 
     public FileConfiguration getConfiguration() {

@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,6 +28,8 @@ public class StorageManager {
     private final FileConfiguration warnsConfig;
     private final File mutesFile;
     private final FileConfiguration mutesConfig;
+    private final File autoCropFile;
+    private final FileConfiguration autoCropConfig;
 
     public StorageManager(FrameworkPlugin plugin) {
         this.plugin = plugin;
@@ -33,16 +38,25 @@ public class StorageManager {
         bansFile = new File(plugin.getDataFolder(), "bans.yml");
         warnsFile = new File(plugin.getDataFolder(), "warns.yml");
         mutesFile = new File(plugin.getDataFolder(), "mutes.yml");
+        autoCropFile = new File(plugin.getDataFolder(), "autocrop.yml");
         if (!homesFile.exists()) plugin.saveResource("homes.yml", false);
         if (!warpsFile.exists()) plugin.saveResource("warps.yml", false);
         if (!bansFile.exists()) plugin.saveResource("bans.yml", false);
         if (!warnsFile.exists()) plugin.saveResource("warns.yml", false);
         if (!mutesFile.exists()) plugin.saveResource("mutes.yml", false);
+        if (!autoCropFile.exists()) {
+            try {
+                autoCropFile.createNewFile();
+            } catch (IOException e) {
+                plugin.getLogger().warning("Failed to create autocrop.yml: " + e.getMessage());
+            }
+        }
         homesConfig = YamlConfiguration.loadConfiguration(homesFile);
         warpsConfig = YamlConfiguration.loadConfiguration(warpsFile);
         bansConfig = YamlConfiguration.loadConfiguration(bansFile);
         warnsConfig = YamlConfiguration.loadConfiguration(warnsFile);
         mutesConfig = YamlConfiguration.loadConfiguration(mutesFile);
+        autoCropConfig = YamlConfiguration.loadConfiguration(autoCropFile);
     }
 
     public void saveAll() {
@@ -52,6 +66,7 @@ public class StorageManager {
             bansConfig.save(bansFile);
             warnsConfig.save(warnsFile);
             mutesConfig.save(mutesFile);
+            autoCropConfig.save(autoCropFile);
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to save data: " + e.getMessage());
         }
@@ -200,5 +215,36 @@ public class StorageManager {
         Set<String> names = new java.util.HashSet<>(mutesConfig.getKeys(false));
         names.removeIf(name -> !isMuted(name));
         return names;
+    }
+
+    public boolean isAutoCropEnabled(UUID playerId, String cropKey, boolean defaultValue) {
+        String key = playerId.toString();
+        if (!autoCropConfig.contains(key)) {
+            return defaultValue;
+        }
+        List<String> enabled = autoCropConfig.getStringList(key);
+        return enabled.contains(cropKey.toLowerCase());
+    }
+
+    public void setAutoCropEnabled(UUID playerId, String cropKey, boolean enabled) {
+        String key = playerId.toString();
+        List<String> enabledCrops = new ArrayList<>(autoCropConfig.getStringList(key));
+        if (enabled) {
+            if (!enabledCrops.contains(cropKey.toLowerCase())) {
+                enabledCrops.add(cropKey.toLowerCase());
+            }
+        } else {
+            enabledCrops.removeIf(entry -> entry.equalsIgnoreCase(cropKey));
+        }
+        autoCropConfig.set(key, enabledCrops);
+        saveAutoCrop();
+    }
+
+    private void saveAutoCrop() {
+        try {
+            autoCropConfig.save(autoCropFile);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to save autocrop data: " + e.getMessage());
+        }
     }
 }

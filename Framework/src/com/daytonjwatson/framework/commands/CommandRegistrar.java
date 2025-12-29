@@ -2,6 +2,7 @@ package com.daytonjwatson.framework.commands;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.api.FrameworkAPI;
+import com.daytonjwatson.framework.autocrop.AutoCropManager;
 import com.daytonjwatson.framework.commands.admin.BanCommand;
 import com.daytonjwatson.framework.commands.admin.BroadcastCommand;
 import com.daytonjwatson.framework.commands.admin.ClearCommand;
@@ -30,6 +31,7 @@ import com.daytonjwatson.framework.commands.admin.VanishCommand;
 import com.daytonjwatson.framework.commands.admin.WarnCommand;
 import com.daytonjwatson.framework.commands.admin.WarningsCommand;
 import com.daytonjwatson.framework.commands.player.BackCommand;
+import com.daytonjwatson.framework.commands.player.AutoCropCommand;
 import com.daytonjwatson.framework.commands.player.DelHomeCommand;
 import com.daytonjwatson.framework.commands.player.EnderChestCommand;
 import com.daytonjwatson.framework.commands.player.HelpCommand;
@@ -67,13 +69,15 @@ public class CommandRegistrar {
     private final StorageManager storage;
     private final PlayerDataManager playerData;
     private final MessageHandler messages;
+    private final AutoCropManager autoCropManager;
 
-    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages) {
+    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages, AutoCropManager autoCropManager) {
         this.plugin = plugin;
         this.api = api;
         this.storage = storage;
         this.playerData = playerData;
         this.messages = messages;
+        this.autoCropManager = autoCropManager;
     }
 
     public void registerCommands() {
@@ -132,6 +136,7 @@ public class CommandRegistrar {
         register("give", new GiveCommand(plugin, api, storage, playerData, messages));
         register("enchant", new EnchantCommand(plugin, api, storage, playerData, messages));
         register("broadcast", new BroadcastCommand(plugin, api, storage, playerData, messages));
+        register("autocrop", new AutoCropCommand(plugin, api, storage, playerData, messages, autoCropManager));
     }
 
     private void register(String name, BaseCommand executor) {
