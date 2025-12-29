@@ -25,7 +25,13 @@ autocrop:
   respect-fortune: true # Whether to apply Fortune I/II/III bonuses to harvested drops
   require-replant-item: true # Remove one seed/crop from the drops or inventory to pay for replanting
   replant-delay-ticks: 2 # Delay before replanting to ensure drops are processed
-  break-protection-seconds: 2 # Time after replanting during which the crop cannot be broken
+  block-immature-breaks: false # Prevent breaking crops that are not fully grown
+  break-protection:
+    enabled: true # Whether newly replanted crops are protected from being broken
+    default-seconds: 2 # Default delay before a replanted crop can be broken
+    min-seconds: 0 # Minimum allowed protection time players can set
+    max-seconds: 30 # Maximum allowed protection time players can set
+  break-protection-seconds: 2 # Legacy fallback for default protection duration
   gui-title: "&aAuto Crop Settings" # Title for the per-player settings menu
   crops: # Default player settings for which crops auto-replant
     wheat: true
