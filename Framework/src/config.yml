@@ -22,6 +22,7 @@ chat:
 # Player-specific toggles
 player-settings:
   gui-title: "&aPlayer Settings"
+  mob-gui-title: "&aMob Spawn Control"
   auto-pickup: true
   protect-tools:
     enabled: true
@@ -32,6 +33,53 @@ player-settings:
   block-mob-spawns:
     enabled: false
     radius: 128.0
+    default-preferences:
+      zombie: true
+      skeleton: true
+      creeper: true
+      spider: true
+      cave_spider: true
+      enderman: true
+      witch: true
+      slime: true
+      magma_cube: true
+      phantom: true
+      drowned: true
+      husk: true
+      stray: true
+      pillager: true
+      vindicator: true
+      evoker: true
+      vex: true
+      ravager: true
+      wither_skeleton: true
+      zombified_piglin: true
+      piglin: true
+      piglin_brute: true
+      hoglin: true
+      zoglin: true
+      ghast: true
+      blaze: true
+      guardian: true
+      elder_guardian: true
+      silverfish: true
+      endermite: true
+      shulker: true
+      warden: true
+      villager: true
+      iron_golem: true
+      snow_golem: true
+      wolf: true
+      cat: true
+      fox: true
+      horse: true
+      donkey: true
+      camel: true
+      cow: true
+      sheep: true
+      pig: true
+      chicken: true
+      rabbit: true
   no-fall-damage: false
 
 # Auto crop replanting

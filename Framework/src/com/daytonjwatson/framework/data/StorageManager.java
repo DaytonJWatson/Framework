@@ -2,17 +2,20 @@ package com.daytonjwatson.framework.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.EntityType;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.autocrop.AutoCropSettings;
@@ -293,7 +296,8 @@ public class StorageManager {
         boolean creeperShield = playerSettingsConfig.getBoolean(path + ".block-creeper-explosions", defaults.isBlockCreeperExplosions());
         boolean blockMobSpawns = playerSettingsConfig.getBoolean(path + ".block-mob-spawns", defaults.isBlockMobSpawns());
         boolean noFallDamage = playerSettingsConfig.getBoolean(path + ".no-fall-damage", defaults.isNoFallDamage());
-        return new PlayerSettings(autoPickup, protectTools, creeperShield, blockMobSpawns, noFallDamage);
+        Map<EntityType, Boolean> mobPreferences = loadMobPreferences(path, defaults.getMobSpawnPreferences());
+        return new PlayerSettings(autoPickup, protectTools, creeperShield, blockMobSpawns, noFallDamage, mobPreferences);
     }
 
     public void savePlayerSettings(UUID playerId, PlayerSettings settings) {
@@ -303,6 +307,7 @@ public class StorageManager {
         playerSettingsConfig.set(path + ".block-creeper-explosions", settings.isBlockCreeperExplosions());
         playerSettingsConfig.set(path + ".block-mob-spawns", settings.isBlockMobSpawns());
         playerSettingsConfig.set(path + ".no-fall-damage", settings.isNoFallDamage());
+        saveMobPreferences(path, settings.getMobSpawnPreferences());
         savePlayerSettingsFile();
     }
 
@@ -311,6 +316,31 @@ public class StorageManager {
             playerSettingsConfig.save(playerSettingsFile);
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to save player settings: " + e.getMessage());
+        }
+    }
+
+    private Map<EntityType, Boolean> loadMobPreferences(String path, Map<EntityType, Boolean> defaults) {
+        String mobPath = path + ".mob-preferences";
+        Map<EntityType, Boolean> preferences = new EnumMap<>(EntityType.class);
+        preferences.putAll(defaults);
+        org.bukkit.configuration.ConfigurationSection section = playerSettingsConfig.getConfigurationSection(mobPath);
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                try {
+                    EntityType type = EntityType.valueOf(key.toUpperCase(Locale.ROOT));
+                    preferences.put(type, section.getBoolean(key, true));
+                } catch (IllegalArgumentException ignored) {
+                    // Skip invalid entity type entries
+                }
+            }
+        }
+        return preferences;
+    }
+
+    private void saveMobPreferences(String path, Map<EntityType, Boolean> preferences) {
+        String mobPath = path + ".mob-preferences";
+        for (Map.Entry<EntityType, Boolean> entry : preferences.entrySet()) {
+            playerSettingsConfig.set(mobPath + "." + entry.getKey().name().toLowerCase(Locale.ROOT), entry.getValue());
         }
     }
 }

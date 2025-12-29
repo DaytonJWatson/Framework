@@ -133,12 +133,13 @@ public class PlayerSettingsListener implements Listener {
         }
 
         Location spawn = event.getLocation();
+        double radiusSquared = settingsManager.getMobSpawnBlockRadius() * settingsManager.getMobSpawnBlockRadius();
         for (Player player : spawn.getWorld().getPlayers()) {
             PlayerSettings settings = settingsManager.getSettings(player);
-            if (!settings.isBlockMobSpawns()) {
+            if (!settings.isBlockMobSpawns() || !settings.isMobSpawnBlocked(event.getEntityType())) {
                 continue;
             }
-            if (spawn.distanceSquared(player.getLocation()) <= settingsManager.getMobSpawnBlockRadius() * settingsManager.getMobSpawnBlockRadius()) {
+            if (spawn.distanceSquared(player.getLocation()) <= radiusSquared) {
                 event.setCancelled(true);
                 return;
             }
@@ -161,7 +162,9 @@ public class PlayerSettingsListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Inventory topInventory = event.getView().getTopInventory();
-        if (!settingsManager.isMenu(topInventory)) {
+        boolean settingsMenu = settingsManager.isMenu(topInventory);
+        boolean mobMenu = settingsManager.isMobMenu(topInventory);
+        if (!settingsMenu && !mobMenu) {
             return;
         }
 
@@ -173,7 +176,11 @@ public class PlayerSettingsListener implements Listener {
         if (event.getClickedInventory() != null && topInventory.equals(event.getClickedInventory())) {
             event.setCancelled(true);
             if (event.getWhoClicked() instanceof Player player) {
-                settingsManager.handleMenuClick(player, topInventory, event.getRawSlot(), event.getClick());
+                if (settingsMenu) {
+                    settingsManager.handleMenuClick(player, topInventory, event.getRawSlot(), event.getClick(), event.isShiftClick());
+                } else {
+                    settingsManager.handleMobMenuClick(player, topInventory, event.getRawSlot());
+                }
             }
             return;
         }
@@ -186,7 +193,7 @@ public class PlayerSettingsListener implements Listener {
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent event) {
         Inventory topInventory = event.getView().getTopInventory();
-        if (settingsManager.isMenu(topInventory)) {
+        if (settingsManager.isMenu(topInventory) || settingsManager.isMobMenu(topInventory)) {
             event.setCancelled(true);
         }
     }
