@@ -1,9 +1,14 @@
 package com.daytonjwatson.framework.autocrop;
 
-import com.daytonjwatson.framework.FrameworkPlugin;
-import com.daytonjwatson.framework.autocrop.AutoCropSettings;
-import com.daytonjwatson.framework.data.StorageManager;
-import com.daytonjwatson.framework.utils.MessageHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,20 +18,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.event.inventory.ClickType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import com.daytonjwatson.framework.FrameworkPlugin;
+import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class AutoCropManager {
     private final FrameworkPlugin plugin;
