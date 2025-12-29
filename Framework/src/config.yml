@@ -19,6 +19,21 @@ teleport:
 chat:
   format: "&7%player% &8» &r%message%" # Supports %player%/%displayname% and %message% placeholders
 
+# Player-specific toggles
+player-settings:
+  gui-title: "&aPlayer Settings"
+  auto-pickup: true
+  protect-tools:
+    enabled: true
+    warn-threshold: 3
+  block-creeper-explosions:
+    enabled: false
+    radius: 6.0
+  block-mob-spawns:
+    enabled: false
+    radius: 16.0
+  no-fall-damage: false
+
 # Auto crop replanting
 autocrop:
   enabled: true # Master toggle for the auto crop feature
