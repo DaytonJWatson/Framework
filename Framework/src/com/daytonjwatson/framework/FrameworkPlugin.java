@@ -43,7 +43,7 @@ public class FrameworkPlugin extends JavaPlugin {
         new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager, playerSettingsManager).registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerActivityListener(this, api, storageManager, playerDataManager, messageHandler), this);
         Bukkit.getPluginManager().registerEvents(new AutoCropListener(autoCropManager), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerSettingsListener(playerSettingsManager, messageHandler), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerSettingsListener(this, playerSettingsManager, messageHandler), this);
     }
 
     @Override

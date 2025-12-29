@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,12 +30,15 @@ import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class PlayerSettingsListener implements Listener {
+    private final com.daytonjwatson.framework.FrameworkPlugin plugin;
     private final PlayerSettingsManager settingsManager;
     private final MessageHandler messages;
     private final Map<UUID, Long> toolWarnings = new HashMap<>();
     private static final long WARNING_COOLDOWN_MILLIS = 2000L;
+    private static final double AUTO_PICKUP_RADIUS = 3.0d;
 
-    public PlayerSettingsListener(PlayerSettingsManager settingsManager, MessageHandler messages) {
+    public PlayerSettingsListener(com.daytonjwatson.framework.FrameworkPlugin plugin, PlayerSettingsManager settingsManager, MessageHandler messages) {
+        this.plugin = plugin;
         this.settingsManager = settingsManager;
         this.messages = messages;
     }
@@ -60,6 +65,8 @@ public class PlayerSettingsListener implements Listener {
         if (!leftovers.isEmpty() && dropLocation.getWorld() != null) {
             leftovers.values().forEach(stack -> dropLocation.getWorld().dropItemNaturally(dropLocation, stack));
         }
+
+        collectNearbyDrops(player, dropLocation);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -84,6 +91,10 @@ public class PlayerSettingsListener implements Listener {
         if (remaining <= settingsManager.getToolProtectionThreshold()) {
             event.setCancelled(true);
             sendToolWarning(player, remaining);
+        }
+
+        if (settings.isAutoPickup()) {
+            collectNearbyDrops(player, event.getBlock().getLocation().add(0.5, 0.5, 0.5));
         }
     }
 
@@ -192,5 +203,26 @@ public class PlayerSettingsListener implements Listener {
             case SPAWNER, SPAWNER_EGG, BREEDING, EGG, DISPENSE_EGG, BUILD_IRONGOLEM, BUILD_SNOWMAN, BUILD_WITHER, CUSTOM, CURED -> true;
             default -> false;
         };
+    }
+
+    private void collectNearbyDrops(Player player, Location location) {
+        if (location.getWorld() == null) {
+            return;
+        }
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            location.getWorld().getNearbyEntities(location, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, entity -> entity instanceof Item)
+                    .forEach(entity -> {
+                        Item item = (Item) entity;
+                        if (item.isDead() || item.getItemStack().getAmount() <= 0) {
+                            return;
+                        }
+                        Map<Integer, ItemStack> remaining = player.getInventory().addItem(item.getItemStack());
+                        if (remaining.isEmpty()) {
+                            item.remove();
+                        } else {
+                            item.setItemStack(remaining.values().iterator().next());
+                        }
+                    });
+        });
     }
 }
