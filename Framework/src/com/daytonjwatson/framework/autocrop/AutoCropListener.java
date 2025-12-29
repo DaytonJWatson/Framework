@@ -28,8 +28,11 @@ public class AutoCropListener implements Listener {
             return;
         }
 
-        boolean handled = manager.handleBlockBreak(player, event.getBlock(), player.getInventory().getItemInMainHand());
-        if (handled) {
+        AutoCropManager.AutoCropResponse response = manager.handleBlockBreak(player, event.getBlock(), player.getInventory().getItemInMainHand());
+        if (response.shouldCancelEvent()) {
+            event.setCancelled(true);
+        }
+        if (response.shouldPreventDrops()) {
             event.setDropItems(false);
         }
     }

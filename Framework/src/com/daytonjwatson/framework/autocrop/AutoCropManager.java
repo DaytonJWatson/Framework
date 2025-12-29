@@ -33,8 +33,10 @@ public class AutoCropManager {
     private final boolean respectFortune;
     private final boolean requireReplantItem;
     private final int replantDelay;
+    private final long breakProtectionMillis;
     private final String menuTitle;
     private final Map<String, CropType> crops = new LinkedHashMap<>();
+    private final Map<String, ProtectedCrop> protectedCrops = new HashMap<>();
 
     public AutoCropManager(FrameworkPlugin plugin, StorageManager storage, MessageHandler messages) {
         this.plugin = plugin;
@@ -46,6 +48,7 @@ public class AutoCropManager {
         this.respectFortune = config.getBoolean("autocrop.respect-fortune", true);
         this.requireReplantItem = config.getBoolean("autocrop.require-replant-item", true);
         this.replantDelay = Math.max(0, config.getInt("autocrop.replant-delay-ticks", 2));
+        this.breakProtectionMillis = Math.max(0, config.getLong("autocrop.break-protection-seconds", 0L)) * 1000L;
         this.menuTitle = ChatColor.translateAlternateColorCodes('&', config.getString("autocrop.gui-title", "&aAuto Crop Settings"));
 
         crops.put("wheat", new CropType("wheat", Material.WHEAT, Material.WHEAT_SEEDS, Material.WHEAT_SEEDS, Material.FARMLAND));
@@ -102,9 +105,9 @@ public class AutoCropManager {
         messages.sendMessage(player, key, "crop", crop.getDisplayName());
     }
 
-    public boolean handleBlockBreak(Player player, Block block, ItemStack tool) {
+    public AutoCropResponse handleBlockBreak(Player player, Block block, ItemStack tool) {
         if (!enabled) {
-            return false;
+            return AutoCropResponse.none();
         }
 
         CropType crop = crops.values().stream()
@@ -112,12 +115,21 @@ public class AutoCropManager {
                 .findFirst()
                 .orElse(null);
 
-        if (crop == null || !isCropEnabled(player, crop) || !isMature(block)) {
-            return false;
+        if (crop == null) {
+            return AutoCropResponse.none();
+        }
+
+        AutoCropResponse protectionCheck = enforceProtection(player, block.getLocation(), crop);
+        if (protectionCheck.shouldCancelEvent()) {
+            return protectionCheck;
+        }
+
+        if (!isCropEnabled(player, crop) || !isMature(block)) {
+            return AutoCropResponse.none();
         }
 
         if (!hasRequiredSoil(block, crop)) {
-            return false;
+            return AutoCropResponse.none();
         }
 
         List<ItemStack> drops = new ArrayList<>();
@@ -132,12 +144,12 @@ public class AutoCropManager {
 
         if (!canReplant) {
             messages.sendMessage(player, "autocrop-missing-seed", "crop", crop.getDisplayName());
-            return true;
+            return AutoCropResponse.preventDropsOnly();
         }
 
         Location replantLocation = block.getLocation();
         Bukkit.getScheduler().runTaskLater(plugin, () -> replantCrop(replantLocation, crop), replantDelay);
-        return true;
+        return AutoCropResponse.preventDropsOnly();
     }
 
     private boolean isMature(Block block) {
@@ -202,6 +214,11 @@ public class AutoCropManager {
             ageable.setAge(0);
             target.setBlockData(ageable, false);
         }
+
+        if (breakProtectionMillis > 0) {
+            String key = key(location);
+            protectedCrops.put(key, new ProtectedCrop(System.currentTimeMillis() + breakProtectionMillis, crop.getDisplayName()));
+        }
     }
 
     private boolean isCropEnabled(Player player, CropType crop) {
@@ -234,6 +251,94 @@ public class AutoCropManager {
             item.setItemMeta(meta);
         }
         return item;
+    }
+
+    private AutoCropResponse enforceProtection(Player player, Location location, CropType crop) {
+        if (breakProtectionMillis <= 0) {
+            return AutoCropResponse.none();
+        }
+
+        cleanupProtection();
+        String key = key(location);
+        ProtectedCrop protection = protectedCrops.get(key);
+        if (protection == null) {
+            return AutoCropResponse.none();
+        }
+
+        long remaining = protection.expiry - System.currentTimeMillis();
+        if (remaining <= 0) {
+            protectedCrops.remove(key);
+            return AutoCropResponse.none();
+        }
+
+        long seconds = Math.max(1L, (long) Math.ceil(remaining / 1000.0));
+        String cropName = protection.cropName != null ? protection.cropName : crop.getDisplayName();
+        String message = messages.getMessage("autocrop-protected")
+                .replace("%time%", String.valueOf(seconds))
+                .replace("%crop%", cropName);
+        player.sendMessage(message);
+        return AutoCropResponse.cancelBreak();
+    }
+
+    private void cleanupProtection() {
+        if (protectedCrops.isEmpty()) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        protectedCrops.entrySet().removeIf(entry -> entry.getValue().expiry <= now);
+    }
+
+    private String key(Location location) {
+        if (location.getWorld() == null) {
+            return "unknown:" + location.getBlockX() + ":" + location.getBlockY() + ":" + location.getBlockZ();
+        }
+        return location.getWorld().getUID() + ":" + location.getBlockX() + ":" + location.getBlockY() + ":" + location.getBlockZ();
+    }
+
+    public static class AutoCropResponse {
+        private final boolean handled;
+        private final boolean cancelEvent;
+        private final boolean preventDrops;
+
+        private AutoCropResponse(boolean handled, boolean cancelEvent, boolean preventDrops) {
+            this.handled = handled;
+            this.cancelEvent = cancelEvent;
+            this.preventDrops = preventDrops;
+        }
+
+        public static AutoCropResponse none() {
+            return new AutoCropResponse(false, false, false);
+        }
+
+        public static AutoCropResponse cancelBreak() {
+            return new AutoCropResponse(true, true, true);
+        }
+
+        public static AutoCropResponse preventDropsOnly() {
+            return new AutoCropResponse(true, false, true);
+        }
+
+        public boolean isHandled() {
+            return handled;
+        }
+
+        public boolean shouldCancelEvent() {
+            return cancelEvent;
+        }
+
+        public boolean shouldPreventDrops() {
+            return preventDrops;
+        }
+    }
+
+    private static class ProtectedCrop {
+        private final long expiry;
+        private final String cropName;
+
+        private ProtectedCrop(long expiry, String cropName) {
+            this.expiry = expiry;
+            this.cropName = cropName;
+        }
     }
 
     private static class CropType {
