@@ -26,12 +26,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.settings.PlayerSettings;
+import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class AutoCropManager {
     private final FrameworkPlugin plugin;
     private final StorageManager storage;
     private final MessageHandler messages;
+    private final PlayerSettingsManager playerSettingsManager;
     private final boolean enabled;
     private final boolean respectFortune;
     private final boolean requireReplantItem;
@@ -48,10 +51,11 @@ public class AutoCropManager {
     private final Map<UUID, Long> lastProtectionWarning = new HashMap<>();
     private static final long WARNING_COOLDOWN_MILLIS = 2000L;
 
-    public AutoCropManager(FrameworkPlugin plugin, StorageManager storage, MessageHandler messages) {
+    public AutoCropManager(FrameworkPlugin plugin, StorageManager storage, MessageHandler messages, PlayerSettingsManager playerSettingsManager) {
         this.plugin = plugin;
         this.storage = storage;
         this.messages = messages;
+        this.playerSettingsManager = playerSettingsManager;
 
         FileConfiguration config = plugin.getConfig();
         this.enabled = config.getBoolean("autocrop.enabled", true);
@@ -263,7 +267,7 @@ public class AutoCropManager {
         }
 
         boolean canReplant = !requireReplantItem || consumeReplantCost(player, crop, drops);
-        dropItems(block.getLocation(), drops);
+        dropItems(player, block.getLocation(), drops);
 
         if (!canReplant) {
             messages.sendMessage(player, "autocrop-missing-seed", "crop", crop.getDisplayName());
@@ -310,15 +314,38 @@ public class AutoCropManager {
         return false;
     }
 
-    private void dropItems(Location location, List<ItemStack> drops) {
+    private void dropItems(Player player, Location location, List<ItemStack> drops) {
         if (location.getWorld() == null) {
             return;
         }
+
+        boolean autoPickup = playerSettingsManager != null;
+        PlayerSettings settings = null;
+        if (autoPickup) {
+            settings = playerSettingsManager.getSettings(player);
+            autoPickup = settings.isAutoPickup();
+        }
+
+        List<ItemStack> leftovers = new ArrayList<>();
         for (ItemStack drop : drops) {
             if (drop.getType() == Material.AIR || drop.getAmount() <= 0) {
                 continue;
             }
-            location.getWorld().dropItemNaturally(location, drop);
+            if (autoPickup) {
+                Map<Integer, ItemStack> remaining = player.getInventory().addItem(drop);
+                if (!remaining.isEmpty()) {
+                    leftovers.addAll(remaining.values());
+                }
+            } else {
+                leftovers.add(drop);
+            }
+        }
+
+        for (ItemStack leftover : leftovers) {
+            if (leftover.getType() == Material.AIR || leftover.getAmount() <= 0) {
+                continue;
+            }
+            location.getWorld().dropItemNaturally(location, leftover);
         }
     }
 

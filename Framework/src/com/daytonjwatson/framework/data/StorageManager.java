@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.autocrop.AutoCropSettings;
+import com.daytonjwatson.framework.settings.PlayerSettings;
 
 public class StorageManager {
     private final FrameworkPlugin plugin;
@@ -31,6 +32,8 @@ public class StorageManager {
     private final FileConfiguration mutesConfig;
     private final File autoCropFile;
     private final FileConfiguration autoCropConfig;
+    private final File playerSettingsFile;
+    private final FileConfiguration playerSettingsConfig;
 
     public StorageManager(FrameworkPlugin plugin) {
         this.plugin = plugin;
@@ -40,6 +43,7 @@ public class StorageManager {
         warnsFile = new File(plugin.getDataFolder(), "warns.yml");
         mutesFile = new File(plugin.getDataFolder(), "mutes.yml");
         autoCropFile = new File(plugin.getDataFolder(), "autocrop.yml");
+        playerSettingsFile = new File(plugin.getDataFolder(), "playersettings.yml");
         if (!homesFile.exists()) plugin.saveResource("homes.yml", false);
         if (!warpsFile.exists()) plugin.saveResource("warps.yml", false);
         if (!bansFile.exists()) plugin.saveResource("bans.yml", false);
@@ -52,12 +56,20 @@ public class StorageManager {
                 plugin.getLogger().warning("Failed to create autocrop.yml: " + e.getMessage());
             }
         }
+        if (!playerSettingsFile.exists()) {
+            try {
+                playerSettingsFile.createNewFile();
+            } catch (IOException e) {
+                plugin.getLogger().warning("Failed to create playersettings.yml: " + e.getMessage());
+            }
+        }
         homesConfig = YamlConfiguration.loadConfiguration(homesFile);
         warpsConfig = YamlConfiguration.loadConfiguration(warpsFile);
         bansConfig = YamlConfiguration.loadConfiguration(bansFile);
         warnsConfig = YamlConfiguration.loadConfiguration(warnsFile);
         mutesConfig = YamlConfiguration.loadConfiguration(mutesFile);
         autoCropConfig = YamlConfiguration.loadConfiguration(autoCropFile);
+        playerSettingsConfig = YamlConfiguration.loadConfiguration(playerSettingsFile);
     }
 
     public void saveAll() {
@@ -68,6 +80,7 @@ public class StorageManager {
             warnsConfig.save(warnsFile);
             mutesConfig.save(mutesFile);
             autoCropConfig.save(autoCropFile);
+            playerSettingsConfig.save(playerSettingsFile);
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to save data: " + e.getMessage());
         }
@@ -270,6 +283,34 @@ public class StorageManager {
             autoCropConfig.save(autoCropFile);
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to save autocrop data: " + e.getMessage());
+        }
+    }
+
+    public PlayerSettings loadPlayerSettings(UUID playerId, PlayerSettings defaults) {
+        String path = playerId.toString();
+        boolean autoPickup = playerSettingsConfig.getBoolean(path + ".auto-pickup", defaults.isAutoPickup());
+        boolean protectTools = playerSettingsConfig.getBoolean(path + ".protect-tools", defaults.isProtectTools());
+        boolean creeperShield = playerSettingsConfig.getBoolean(path + ".block-creeper-explosions", defaults.isBlockCreeperExplosions());
+        boolean blockMobSpawns = playerSettingsConfig.getBoolean(path + ".block-mob-spawns", defaults.isBlockMobSpawns());
+        boolean noFallDamage = playerSettingsConfig.getBoolean(path + ".no-fall-damage", defaults.isNoFallDamage());
+        return new PlayerSettings(autoPickup, protectTools, creeperShield, blockMobSpawns, noFallDamage);
+    }
+
+    public void savePlayerSettings(UUID playerId, PlayerSettings settings) {
+        String path = playerId.toString();
+        playerSettingsConfig.set(path + ".auto-pickup", settings.isAutoPickup());
+        playerSettingsConfig.set(path + ".protect-tools", settings.isProtectTools());
+        playerSettingsConfig.set(path + ".block-creeper-explosions", settings.isBlockCreeperExplosions());
+        playerSettingsConfig.set(path + ".block-mob-spawns", settings.isBlockMobSpawns());
+        playerSettingsConfig.set(path + ".no-fall-damage", settings.isNoFallDamage());
+        savePlayerSettingsFile();
+    }
+
+    private void savePlayerSettingsFile() {
+        try {
+            playerSettingsConfig.save(playerSettingsFile);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to save player settings: " + e.getMessage());
         }
     }
 }
