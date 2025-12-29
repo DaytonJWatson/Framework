@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 public class AutoCropManager {
     private final FrameworkPlugin plugin;
@@ -43,6 +44,9 @@ public class AutoCropManager {
     private final String menuTitle;
     private final Map<String, CropType> crops = new LinkedHashMap<>();
     private final Map<String, ProtectedCrop> protectedCrops = new HashMap<>();
+    private final Map<UUID, Long> lastImmatureWarning = new HashMap<>();
+    private final Map<UUID, Long> lastProtectionWarning = new HashMap<>();
+    private static final long WARNING_COOLDOWN_MILLIS = 2000L;
 
     public AutoCropManager(FrameworkPlugin plugin, StorageManager storage, MessageHandler messages) {
         this.plugin = plugin;
@@ -125,6 +129,16 @@ public class AutoCropManager {
     private AutoCropSettings clampSettings(AutoCropSettings settings) {
         int seconds = Math.min(maxBreakProtectionSeconds, Math.max(minBreakProtectionSeconds, settings.getBreakProtectionSeconds()));
         return new AutoCropSettings(settings.isBlockImmatureBreaks(), settings.isBreakProtectionToggle(), seconds);
+    }
+
+    private boolean shouldSendWarning(Map<UUID, Long> tracker, UUID playerId) {
+        long now = System.currentTimeMillis();
+        Long last = tracker.get(playerId);
+        if (last != null && (now - last) < WARNING_COOLDOWN_MILLIS) {
+            return false;
+        }
+        tracker.put(playerId, now);
+        return true;
     }
 
     public void handleMenuClick(Player player, Inventory inventory, int slot, ClickType clickType) {
@@ -222,7 +236,9 @@ public class AutoCropManager {
 
         AutoCropSettings settings = getSettings(player);
         if (settings.isBlockImmatureBreaks() && !isMature(block)) {
-            messages.sendMessage(player, "autocrop-immature-blocked", "crop", crop.getDisplayName());
+            if (shouldSendWarning(lastImmatureWarning, player.getUniqueId())) {
+                messages.sendMessage(player, "autocrop-immature-blocked", "crop", crop.getDisplayName());
+            }
             return AutoCropResponse.cancelBreak();
         }
 
@@ -418,12 +434,14 @@ public class AutoCropManager {
             return AutoCropResponse.none();
         }
 
-        long seconds = Math.max(1L, (long) Math.ceil(remaining / 1000.0));
-        String cropName = protection.cropName != null ? protection.cropName : crop.getDisplayName();
-        String message = messages.getMessage("autocrop-protected")
-                .replace("%time%", String.valueOf(seconds))
-                .replace("%crop%", cropName);
-        player.sendMessage(message);
+        if (shouldSendWarning(lastProtectionWarning, player.getUniqueId())) {
+            long seconds = Math.max(1L, (long) Math.ceil(remaining / 1000.0));
+            String cropName = protection.cropName != null ? protection.cropName : crop.getDisplayName();
+            String message = messages.getMessage("autocrop-protected")
+                    .replace("%time%", String.valueOf(seconds))
+                    .replace("%crop%", cropName);
+            player.sendMessage(message);
+        }
         return AutoCropResponse.cancelBreak();
     }
 
