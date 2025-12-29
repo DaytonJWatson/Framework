@@ -52,7 +52,7 @@ public class AutoCropListener implements Listener {
         if (event.getClickedInventory() != null && topInventory.equals(event.getClickedInventory())) {
             event.setCancelled(true);
             if (event.getWhoClicked() instanceof Player player) {
-                manager.handleMenuClick(player, topInventory, event.getRawSlot());
+                manager.handleMenuClick(player, topInventory, event.getRawSlot(), event.getClick());
             }
             return;
         }
