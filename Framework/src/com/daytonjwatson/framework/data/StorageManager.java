@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.daytonjwatson.framework.FrameworkPlugin;
+import com.daytonjwatson.framework.autocrop.AutoCropSettings;
 
 public class StorageManager {
     private final FrameworkPlugin plugin;
@@ -218,17 +219,23 @@ public class StorageManager {
     }
 
     public boolean isAutoCropEnabled(UUID playerId, String cropKey, boolean defaultValue) {
-        String key = playerId.toString();
-        if (!autoCropConfig.contains(key)) {
+        String path = playerId.toString();
+        if (!autoCropConfig.contains(path)) {
             return defaultValue;
         }
-        List<String> enabled = autoCropConfig.getStringList(key);
+        List<String> enabled = autoCropConfig.getStringList(path + ".crops");
+        if (enabled.isEmpty() && autoCropConfig.isList(path)) {
+            enabled = autoCropConfig.getStringList(path);
+        }
         return enabled.contains(cropKey.toLowerCase());
     }
 
     public void setAutoCropEnabled(UUID playerId, String cropKey, boolean enabled) {
-        String key = playerId.toString();
-        List<String> enabledCrops = new ArrayList<>(autoCropConfig.getStringList(key));
+        String path = playerId.toString();
+        List<String> enabledCrops = new ArrayList<>(autoCropConfig.getStringList(path + ".crops"));
+        if (enabledCrops.isEmpty() && autoCropConfig.isList(path)) {
+            enabledCrops = new ArrayList<>(autoCropConfig.getStringList(path));
+        }
         if (enabled) {
             if (!enabledCrops.contains(cropKey.toLowerCase())) {
                 enabledCrops.add(cropKey.toLowerCase());
@@ -236,7 +243,25 @@ public class StorageManager {
         } else {
             enabledCrops.removeIf(entry -> entry.equalsIgnoreCase(cropKey));
         }
-        autoCropConfig.set(key, enabledCrops);
+        autoCropConfig.set(path + ".crops", enabledCrops);
+        saveAutoCrop();
+    }
+
+    public AutoCropSettings getAutoCropSettings(UUID playerId, AutoCropSettings defaultSettings) {
+        String path = playerId.toString() + ".settings";
+        boolean blockImmature = autoCropConfig.getBoolean(path + ".block-immature", defaultSettings.isBlockImmatureBreaks());
+        boolean protectionEnabled = autoCropConfig.contains(path + ".break-protection.enabled") ?
+                autoCropConfig.getBoolean(path + ".break-protection.enabled") :
+                defaultSettings.isBreakProtectionToggle();
+        int protectionSeconds = autoCropConfig.getInt(path + ".break-protection.seconds", defaultSettings.getBreakProtectionSeconds());
+        return new AutoCropSettings(blockImmature, protectionEnabled, protectionSeconds);
+    }
+
+    public void setAutoCropSettings(UUID playerId, AutoCropSettings settings) {
+        String path = playerId.toString() + ".settings";
+        autoCropConfig.set(path + ".block-immature", settings.isBlockImmatureBreaks());
+        autoCropConfig.set(path + ".break-protection.enabled", settings.isBreakProtectionToggle());
+        autoCropConfig.set(path + ".break-protection.seconds", settings.getBreakProtectionSeconds());
         saveAutoCrop();
     }
 
