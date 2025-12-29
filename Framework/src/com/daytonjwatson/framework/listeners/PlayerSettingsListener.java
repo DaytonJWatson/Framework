@@ -25,19 +25,22 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
+import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.settings.PlayerSettings;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class PlayerSettingsListener implements Listener {
-    private final com.daytonjwatson.framework.FrameworkPlugin plugin;
+    private final FrameworkPlugin plugin;
     private final PlayerSettingsManager settingsManager;
     private final MessageHandler messages;
     private final Map<UUID, Long> toolWarnings = new HashMap<>();
     private static final long WARNING_COOLDOWN_MILLIS = 2000L;
     private static final double AUTO_PICKUP_RADIUS = 3.0d;
+    private static final int AUTO_PICKUP_ATTEMPTS = 4;
+    private static final long AUTO_PICKUP_INTERVAL_TICKS = 2L;
 
-    public PlayerSettingsListener(com.daytonjwatson.framework.FrameworkPlugin plugin, PlayerSettingsManager settingsManager, MessageHandler messages) {
+    public PlayerSettingsListener(FrameworkPlugin plugin, PlayerSettingsManager settingsManager, MessageHandler messages) {
         this.plugin = plugin;
         this.settingsManager = settingsManager;
         this.messages = messages;
@@ -209,20 +212,39 @@ public class PlayerSettingsListener implements Listener {
         if (location.getWorld() == null) {
             return;
         }
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            location.getWorld().getNearbyEntities(location, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, entity -> entity instanceof Item)
-                    .forEach(entity -> {
-                        Item item = (Item) entity;
-                        if (item.isDead() || item.getItemStack().getAmount() <= 0) {
-                            return;
-                        }
-                        Map<Integer, ItemStack> remaining = player.getInventory().addItem(item.getItemStack());
-                        if (remaining.isEmpty()) {
-                            item.remove();
-                        } else {
-                            item.setItemStack(remaining.values().iterator().next());
-                        }
-                    });
-        });
+        runPickupScan(player, location);
+        for (int i = 1; i < AUTO_PICKUP_ATTEMPTS; i++) {
+            long delay = AUTO_PICKUP_INTERVAL_TICKS * i;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> runPickupScan(player, location), delay);
+        }
+    }
+
+    private void runPickupScan(Player player, Location location) {
+        if (!player.isOnline() || location.getWorld() == null) {
+            return;
+        }
+
+        location.getWorld().getNearbyEntities(location, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, AUTO_PICKUP_RADIUS, entity -> entity instanceof Item)
+                .forEach(entity -> {
+                    Item item = (Item) entity;
+                    if (item.isDead() || item.getItemStack().getAmount() <= 0) {
+                        return;
+                    }
+                    Map<Integer, ItemStack> remaining = player.getInventory().addItem(item.getItemStack());
+                    if (remaining.isEmpty()) {
+                        item.remove();
+                        return;
+                    }
+
+                    int totalRemaining = remaining.values().stream().mapToInt(ItemStack::getAmount).sum();
+                    if (totalRemaining <= 0) {
+                        item.remove();
+                        return;
+                    }
+
+                    ItemStack first = item.getItemStack().clone();
+                    first.setAmount(totalRemaining);
+                    item.setItemStack(first);
+                });
     }
 }
