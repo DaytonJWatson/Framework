@@ -7,6 +7,8 @@ import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.autocrop.AutoCropManager;
 import com.daytonjwatson.framework.autocrop.AutoCropListener;
 import com.daytonjwatson.framework.listeners.PlayerActivityListener;
+import com.daytonjwatson.framework.listeners.PlayerSettingsListener;
+import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +22,7 @@ public class FrameworkPlugin extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private FrameworkAPI api;
     private AutoCropManager autoCropManager;
+    private PlayerSettingsManager playerSettingsManager;
 
     @Override
     public void onLoad() {
@@ -35,10 +38,12 @@ public class FrameworkPlugin extends JavaPlugin {
         this.playerDataManager = new PlayerDataManager(this, messageHandler);
         this.api = new FrameworkAPI(storageManager, messageHandler, playerDataManager);
         this.autoCropManager = new AutoCropManager(this, storageManager, messageHandler);
+        this.playerSettingsManager = new PlayerSettingsManager(this, storageManager, messageHandler);
 
-        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager).registerCommands();
+        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager, playerSettingsManager).registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerActivityListener(this, api, storageManager, playerDataManager, messageHandler), this);
         Bukkit.getPluginManager().registerEvents(new AutoCropListener(autoCropManager), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerSettingsListener(playerSettingsManager, messageHandler), this);
     }
 
     @Override
@@ -69,6 +74,10 @@ public class FrameworkPlugin extends JavaPlugin {
 
     public AutoCropManager getAutoCropManager() {
         return autoCropManager;
+    }
+
+    public PlayerSettingsManager getPlayerSettingsManager() {
+        return playerSettingsManager;
     }
 
     public FileConfiguration getConfiguration() {
