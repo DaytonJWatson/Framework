@@ -19,6 +19,21 @@ teleport:
 chat:
   format: "&7%player% &8» &r%message%" # Supports %player%/%displayname% and %message% placeholders
 
+# Auto crop replanting
+autocrop:
+  enabled: true # Master toggle for the auto crop feature
+  respect-fortune: true # Whether to apply Fortune I/II/III bonuses to harvested drops
+  require-replant-item: true # Remove one seed/crop from the drops or inventory to pay for replanting
+  replant-delay-ticks: 2 # Delay before replanting to ensure drops are processed
+  break-protection-seconds: 2 # Time after replanting during which the crop cannot be broken
+  gui-title: "&aAuto Crop Settings" # Title for the per-player settings menu
+  crops: # Default player settings for which crops auto-replant
+    wheat: true
+    carrots: true
+    potatoes: true
+    beetroot: true
+    nether_wart: true
+
 # Join and quit announcements
 player-messages:
   join: "&e%player% joined the game" # Message shown when a player joins

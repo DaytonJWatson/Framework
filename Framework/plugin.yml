@@ -146,3 +146,6 @@ commands:
   broadcast:
     description: Broadcast message
     permission: framework.broadcast
+  autocrop:
+    description: Open the auto crop settings menu
+    permission: framework.autocrop
