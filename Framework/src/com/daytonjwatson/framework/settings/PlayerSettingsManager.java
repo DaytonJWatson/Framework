@@ -73,7 +73,6 @@ public class PlayerSettingsManager {
             new MobPreferenceOption(EntityType.CHICKEN, "Chickens", Material.EGG),
             new MobPreferenceOption(EntityType.RABBIT, "Rabbits", Material.RABBIT_FOOT)
     );
-    private final FrameworkPlugin plugin;
     private final StorageManager storage;
     private final MessageHandler messages;
     private final boolean defaultAutoPickup;
@@ -89,7 +88,6 @@ public class PlayerSettingsManager {
     private final String mobMenuTitle;
 
     public PlayerSettingsManager(FrameworkPlugin plugin, StorageManager storage, MessageHandler messages) {
-        this.plugin = plugin;
         this.storage = storage;
         this.messages = messages;
 
