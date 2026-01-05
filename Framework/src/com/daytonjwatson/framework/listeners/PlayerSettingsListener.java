@@ -59,7 +59,7 @@ public class PlayerSettingsListener implements Listener {
         Map<Integer, ItemStack> leftovers = new HashMap<>();
         event.setCancelled(true);
         event.getItems().forEach(item -> {
-            Map<Integer, ItemStack> remain = player.getInventory().addItem(item.getItemStack());
+            Map<Integer, ItemStack> remain = InventoryUtil.addItemRespectingOffhand(player, item.getItemStack());
             if (!remain.isEmpty()) {
                 leftovers.putAll(remain);
             }
