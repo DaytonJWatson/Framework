@@ -29,6 +29,7 @@ import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.settings.PlayerSettings;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
+import com.daytonjwatson.framework.utils.InventoryUtil;
 
 public class PlayerSettingsListener implements Listener {
     private final FrameworkPlugin plugin;
@@ -237,7 +238,7 @@ public class PlayerSettingsListener implements Listener {
                     if (item.isDead() || item.getItemStack().getAmount() <= 0) {
                         return;
                     }
-                    Map<Integer, ItemStack> remaining = player.getInventory().addItem(item.getItemStack());
+                    Map<Integer, ItemStack> remaining = InventoryUtil.addItemRespectingOffhand(player, item.getItemStack());
                     if (remaining.isEmpty()) {
                         item.remove();
                         return;
