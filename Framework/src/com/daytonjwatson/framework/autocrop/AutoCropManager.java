@@ -28,6 +28,7 @@ import com.daytonjwatson.framework.FrameworkPlugin;
 import com.daytonjwatson.framework.data.StorageManager;
 import com.daytonjwatson.framework.settings.PlayerSettings;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
+import com.daytonjwatson.framework.utils.InventoryUtil;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
 public class AutoCropManager {
@@ -332,7 +333,7 @@ public class AutoCropManager {
                 continue;
             }
             if (autoPickup) {
-                Map<Integer, ItemStack> remaining = player.getInventory().addItem(drop);
+                Map<Integer, ItemStack> remaining = InventoryUtil.addItemRespectingOffhand(player, drop);
                 if (!remaining.isEmpty()) {
                     leftovers.addAll(remaining.values());
                 }
