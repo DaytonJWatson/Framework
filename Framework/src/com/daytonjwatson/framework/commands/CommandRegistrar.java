@@ -64,6 +64,7 @@ import com.daytonjwatson.framework.commands.player.WeatherCommand;
 import com.daytonjwatson.framework.commands.player.WorkbenchCommand;
 import com.daytonjwatson.framework.data.PlayerDataManager;
 import com.daytonjwatson.framework.data.StorageManager;
+import com.daytonjwatson.framework.nuker.NukerManager;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 
@@ -75,8 +76,9 @@ public class CommandRegistrar {
     private final MessageHandler messages;
     private final AutoCropManager autoCropManager;
     private final PlayerSettingsManager playerSettingsManager;
+    private final NukerManager nukerManager;
 
-    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages, AutoCropManager autoCropManager, PlayerSettingsManager playerSettingsManager) {
+    public CommandRegistrar(FrameworkPlugin plugin, FrameworkAPI api, StorageManager storage, PlayerDataManager playerData, MessageHandler messages, AutoCropManager autoCropManager, PlayerSettingsManager playerSettingsManager, NukerManager nukerManager) {
         this.plugin = plugin;
         this.api = api;
         this.storage = storage;
@@ -84,6 +86,7 @@ public class CommandRegistrar {
         this.messages = messages;
         this.autoCropManager = autoCropManager;
         this.playerSettingsManager = playerSettingsManager;
+        this.nukerManager = nukerManager;
     }
 
     public void registerCommands() {
@@ -145,7 +148,7 @@ public class CommandRegistrar {
         register("enchant", new EnchantCommand(plugin, api, storage, playerData, messages));
         register("broadcast", new BroadcastCommand(plugin, api, storage, playerData, messages));
         register("autocrop", new AutoCropCommand(plugin, api, storage, playerData, messages, autoCropManager));
-        register("nuker", new NukerCommand(plugin, api, storage, playerData, messages));
+        register("nuker", new NukerCommand(plugin, api, storage, playerData, messages, nukerManager));
     }
 
     private void register(String name, BaseCommand executor) {

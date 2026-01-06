@@ -188,6 +188,8 @@ ruler-measurement: "&eDistance: &f%distance% &e| Center: &f(%centerx%, %centery%
 pillar-enabled: "&aPillar building enabled."
 pillar-disabled: "&cPillar building disabled."
 pillar-not-enough-blocks: "&cYou don't have enough blocks to build that pillar."
+nuker-enabled: "&aNuker enabled. Breaking nearby blocks with your held tool."
+nuker-disabled: "&cNuker disabled."
 nuker-no-tool: "&cYou must hold a tool to use nuker."
 nuker-no-blocks: "&cNo breakable blocks found in range."
 nuker-success: "&aNuked &f%count% &ablocks using your tool."
