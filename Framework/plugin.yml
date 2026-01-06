@@ -155,3 +155,6 @@ commands:
   autocrop:
     description: Open the auto crop settings menu
     permission: framework.autocrop
+  nuker:
+    description: Break nearby blocks using the held tool
+    permission: framework.nuker
