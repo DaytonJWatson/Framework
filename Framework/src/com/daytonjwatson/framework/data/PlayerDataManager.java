@@ -98,6 +98,24 @@ public class PlayerDataManager {
         return flying.contains(player.getUniqueId());
     }
 
+    public void applyFlightState(Player player) {
+        boolean hasCommandFlight = isFlying(player);
+        boolean allowFlight = hasCommandFlight
+                || player.getGameMode() == org.bukkit.GameMode.CREATIVE
+                || player.getGameMode() == org.bukkit.GameMode.SPECTATOR;
+
+        player.setAllowFlight(allowFlight);
+
+        if (!allowFlight) {
+            player.setFlying(false);
+            return;
+        }
+
+        if (hasCommandFlight) {
+            player.setFlying(true);
+        }
+    }
+
     public String getPlaytime(OfflinePlayer player) {
         long ticks = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
         long seconds = ticks / 20;

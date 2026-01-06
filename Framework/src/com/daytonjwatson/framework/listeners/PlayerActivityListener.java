@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -63,6 +64,7 @@ public class PlayerActivityListener implements Listener {
         Player player = event.getPlayer();
         String joinMessage = plugin.getConfig().getString("player-messages.join", messages.getMessage("join"));
         event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', joinMessage).replace("%player%", player.getName()));
+        playerData.applyFlightState(player);
     }
 
     @EventHandler
@@ -125,5 +127,11 @@ public class PlayerActivityListener implements Listener {
         float pitch = (float) plugin.getConfig().getDouble("spawn.pitch", 0f);
         Location spawnLocation = new Location(world, x, y, z, yaw, pitch);
         event.setRespawnLocation(spawnLocation);
+        playerData.applyFlightState(player);
+    }
+
+    @EventHandler
+    public void onWorldChange(PlayerChangedWorldEvent event) {
+        playerData.applyFlightState(event.getPlayer());
     }
 }
