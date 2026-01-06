@@ -18,6 +18,7 @@ import com.daytonjwatson.framework.commands.admin.InvseeCommand;
 import com.daytonjwatson.framework.commands.admin.KickCommand;
 import com.daytonjwatson.framework.commands.admin.MuteCommand;
 import com.daytonjwatson.framework.commands.admin.NicknameCommand;
+import com.daytonjwatson.framework.commands.admin.NukerCommand;
 import com.daytonjwatson.framework.commands.admin.SetSpawnCommand;
 import com.daytonjwatson.framework.commands.admin.SetWarpCommand;
 import com.daytonjwatson.framework.commands.admin.TempBanCommand;
@@ -144,6 +145,7 @@ public class CommandRegistrar {
         register("enchant", new EnchantCommand(plugin, api, storage, playerData, messages));
         register("broadcast", new BroadcastCommand(plugin, api, storage, playerData, messages));
         register("autocrop", new AutoCropCommand(plugin, api, storage, playerData, messages, autoCropManager));
+        register("nuker", new NukerCommand(plugin, api, storage, playerData, messages));
     }
 
     private void register(String name, BaseCommand executor) {
