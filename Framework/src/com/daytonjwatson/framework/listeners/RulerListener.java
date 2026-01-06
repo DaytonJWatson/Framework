@@ -73,8 +73,8 @@ public class RulerListener implements Listener {
             return;
         }
 
-        Location firstCenter = first.toCenterLocation();
-        Location secondCenter = clicked.toCenterLocation();
+        Location firstCenter = center(first);
+        Location secondCenter = center(clicked);
 
         double distance = firstCenter.distance(secondCenter);
 
@@ -87,5 +87,14 @@ public class RulerListener implements Listener {
                 .replace("%centerx%", DECIMAL_FORMAT.format(centerX))
                 .replace("%centery%", DECIMAL_FORMAT.format(centerY))
                 .replace("%centerz%", DECIMAL_FORMAT.format(centerZ)));
+    }
+
+    private Location center(Location location) {
+        return new Location(
+                location.getWorld(),
+                location.getBlockX() + 0.5d,
+                location.getBlockY() + 0.5d,
+                location.getBlockZ() + 0.5d
+        );
     }
 }
