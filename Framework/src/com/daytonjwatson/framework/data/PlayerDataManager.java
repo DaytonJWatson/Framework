@@ -22,6 +22,7 @@ public class PlayerDataManager {
     private final Set<UUID> vanished = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<UUID> godMode = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Set<UUID> flying = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final Set<UUID> pillarEnabled = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Map<UUID, Long> teleportCooldowns = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitRunnable> pendingTeleports = new ConcurrentHashMap<>();
 
@@ -96,6 +97,18 @@ public class PlayerDataManager {
 
     public boolean isFlying(Player player) {
         return flying.contains(player.getUniqueId());
+    }
+
+    public void setPillarEnabled(Player player, boolean state) {
+        if (state) {
+            pillarEnabled.add(player.getUniqueId());
+        } else {
+            pillarEnabled.remove(player.getUniqueId());
+        }
+    }
+
+    public boolean isPillarEnabled(Player player) {
+        return pillarEnabled.contains(player.getUniqueId());
     }
 
     public void applyFlightState(Player player) {
