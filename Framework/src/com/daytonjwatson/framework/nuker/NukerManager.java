@@ -115,8 +115,8 @@ public class NukerManager {
         int centerY = location.getBlockY();
         int centerZ = location.getBlockZ();
 
-        int minY = Math.max(world.getMinHeight(), centerY - RADIUS);
-        int maxY = Math.min(world.getMaxHeight() - 1, centerY + RADIUS);
+        int minY = Math.max(world.getMinHeight(), centerY + 1);
+        int maxY = Math.min(world.getMaxHeight() - 1, centerY + 1 + (RADIUS * 2));
 
         Stream<Block> targets = BlockStreamHelper.cube(world, centerX, centerY, centerZ, RADIUS, minY, maxY);
         targets.forEach(block -> {
