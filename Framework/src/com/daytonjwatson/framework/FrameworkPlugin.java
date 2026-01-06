@@ -8,6 +8,7 @@ import com.daytonjwatson.framework.autocrop.AutoCropManager;
 import com.daytonjwatson.framework.autocrop.AutoCropListener;
 import com.daytonjwatson.framework.listeners.PlayerActivityListener;
 import com.daytonjwatson.framework.listeners.PlayerSettingsListener;
+import com.daytonjwatson.framework.listeners.PillarListener;
 import com.daytonjwatson.framework.listeners.RulerListener;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
@@ -46,6 +47,7 @@ public class FrameworkPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AutoCropListener(autoCropManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerSettingsListener(this, playerSettingsManager, messageHandler), this);
         Bukkit.getPluginManager().registerEvents(new RulerListener(messageHandler), this);
+        Bukkit.getPluginManager().registerEvents(new PillarListener(this, playerDataManager), this);
     }
 
     @Override

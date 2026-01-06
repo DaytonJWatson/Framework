@@ -43,6 +43,7 @@ import com.daytonjwatson.framework.commands.player.MotdCommand;
 import com.daytonjwatson.framework.commands.player.MsgCommand;
 import com.daytonjwatson.framework.commands.player.PlaytimeCommand;
 import com.daytonjwatson.framework.commands.player.PlayerSettingsCommand;
+import com.daytonjwatson.framework.commands.player.PillarCommand;
 import com.daytonjwatson.framework.commands.player.RealnameCommand;
 import com.daytonjwatson.framework.commands.player.ReplyCommand;
 import com.daytonjwatson.framework.commands.player.RtpCommand;
@@ -115,6 +116,7 @@ public class CommandRegistrar {
         register("workbench", new WorkbenchCommand(plugin, api, storage, playerData, messages));
         register("stats", new StatsCommand(plugin, api, storage, playerData, messages));
         register("playtime", new PlaytimeCommand(plugin, api, storage, playerData, messages));
+        register("pillar", new PillarCommand(plugin, api, storage, playerData, messages));
         register("ban", new BanCommand(plugin, api, storage, playerData, messages));
         register("tempban", new TempBanCommand(plugin, api, storage, playerData, messages));
         register("unban", new UnbanCommand(plugin, api, storage, playerData, messages));

@@ -68,6 +68,9 @@ commands:
     description: View stats
   playtime:
     description: View playtime
+  pillar:
+    description: Toggle automatic pillaring when placing blocks
+    permission: framework.pillar
   ban:
     description: Ban player
     permission: framework.ban
