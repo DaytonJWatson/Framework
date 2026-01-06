@@ -42,10 +42,7 @@ public class FlyCommand extends BaseCommand {
 
         boolean newState = !playerData.isFlying(target);
         playerData.setFlying(target, newState);
-        target.setAllowFlight(newState || target.getGameMode() == org.bukkit.GameMode.CREATIVE || target.getGameMode() == org.bukkit.GameMode.SPECTATOR);
-        if (!newState && target.getGameMode() != org.bukkit.GameMode.CREATIVE && target.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
-            target.setFlying(false);
-        }
+        playerData.applyFlightState(target);
 
         if (target.equals(sender)) {
             messages.sendMessage(target, newState ? "fly-enabled" : "fly-disabled");

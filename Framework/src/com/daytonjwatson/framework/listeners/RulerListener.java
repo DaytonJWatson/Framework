@@ -76,7 +76,7 @@ public class RulerListener implements Listener {
         Location firstCenter = center(first);
         Location secondCenter = center(clicked);
 
-        double distance = firstCenter.distance(secondCenter);
+        double distance = firstCenter.distance(secondCenter) + 1.0d;
 
         double centerX = (firstCenter.getX() + secondCenter.getX()) / 2.0d;
         double centerY = (firstCenter.getY() + secondCenter.getY()) / 2.0d;
