@@ -10,6 +10,7 @@ import com.daytonjwatson.framework.listeners.PlayerActivityListener;
 import com.daytonjwatson.framework.listeners.PlayerSettingsListener;
 import com.daytonjwatson.framework.listeners.PillarListener;
 import com.daytonjwatson.framework.listeners.RulerListener;
+import com.daytonjwatson.framework.nuker.NukerManager;
 import com.daytonjwatson.framework.settings.PlayerSettingsManager;
 import com.daytonjwatson.framework.utils.MessageHandler;
 import org.bukkit.Bukkit;
@@ -25,6 +26,7 @@ public class FrameworkPlugin extends JavaPlugin {
     private FrameworkAPI api;
     private AutoCropManager autoCropManager;
     private PlayerSettingsManager playerSettingsManager;
+    private NukerManager nukerManager;
 
     @Override
     public void onLoad() {
@@ -41,8 +43,9 @@ public class FrameworkPlugin extends JavaPlugin {
         this.api = new FrameworkAPI(storageManager, messageHandler, playerDataManager);
         this.playerSettingsManager = new PlayerSettingsManager(this, storageManager, messageHandler);
         this.autoCropManager = new AutoCropManager(this, storageManager, messageHandler, playerSettingsManager);
+        this.nukerManager = new NukerManager(this, messageHandler);
 
-        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager, playerSettingsManager).registerCommands();
+        new CommandRegistrar(this, api, storageManager, playerDataManager, messageHandler, autoCropManager, playerSettingsManager, nukerManager).registerCommands();
         Bukkit.getPluginManager().registerEvents(new PlayerActivityListener(this, api, storageManager, playerDataManager, messageHandler), this);
         Bukkit.getPluginManager().registerEvents(new AutoCropListener(autoCropManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerSettingsListener(this, playerSettingsManager, messageHandler), this);
@@ -82,6 +85,10 @@ public class FrameworkPlugin extends JavaPlugin {
 
     public PlayerSettingsManager getPlayerSettingsManager() {
         return playerSettingsManager;
+    }
+
+    public NukerManager getNukerManager() {
+        return nukerManager;
     }
 
     public FileConfiguration getConfiguration() {
