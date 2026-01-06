@@ -20,12 +20,15 @@ import java.util.stream.Stream;
 
 public class NukerManager {
 
-    private static final int RADIUS = 1;
+    private static final int DEFAULT_RADIUS = 1;
+    private static final int MIN_RADIUS = 1;
+    private static final int MAX_RADIUS = 5;
     private static final int TASK_INTERVAL_TICKS = 2;
     private final FrameworkPlugin plugin;
     private final MessageHandler messages;
     private final Set<UUID> activeNukers = ConcurrentHashMap.newKeySet();
     private final ConcurrentMap<UUID, Long> lastToolWarnings = new ConcurrentHashMap<>();
+    private final ConcurrentMap<UUID, Integer> playerRadii = new ConcurrentHashMap<>();
     private static final long TOOL_WARNING_COOLDOWN_MILLIS = 2000L;
     private final Set<Material> unbreakable = Set.of(
             Material.BEDROCK,
@@ -62,6 +65,16 @@ public class NukerManager {
 
         activeNukers.add(uuid);
         messages.sendMessage(player, "nuker-enabled");
+        return true;
+    }
+
+    public boolean setRadius(Player player, int radius) {
+        if (radius < MIN_RADIUS || radius > MAX_RADIUS) {
+            messages.sendMessage(player, "nuker-radius-invalid");
+            return false;
+        }
+        playerRadii.put(player.getUniqueId(), radius);
+        messages.sendMessage(player, "nuker-radius-set", "radius", String.valueOf(radius));
         return true;
     }
 
@@ -114,11 +127,12 @@ public class NukerManager {
         int centerX = location.getBlockX();
         int centerY = location.getBlockY();
         int centerZ = location.getBlockZ();
+        int radius = playerRadii.getOrDefault(player.getUniqueId(), DEFAULT_RADIUS);
 
         int minY = Math.max(world.getMinHeight(), centerY);
-        int maxY = Math.min(world.getMaxHeight() - 1, centerY + (RADIUS * 2));
+        int maxY = Math.min(world.getMaxHeight() - 1, centerY + (radius * 2));
 
-        Stream<Block> targets = BlockStreamHelper.cube(world, centerX, centerY, centerZ, RADIUS, minY, maxY);
+        Stream<Block> targets = BlockStreamHelper.cube(world, centerX, centerY, centerZ, radius, minY, maxY);
         targets.forEach(block -> {
             if (shouldSkip(block, centerX, centerY, centerZ)) {
                 return;
